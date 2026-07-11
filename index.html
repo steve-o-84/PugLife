@@ -1,0 +1,1980 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#efb66f">
+<title>PugLife · v1.6.10</title>
+<style>
+:root{
+  --ink:#34261f;--paper:#fffaf0;--orange:#e89459;--orange2:#f2ba73;--green:#7eb486;
+  --red:#d96f68;--blue:#75aeca;--gold:#e6b64e;--panel:#fffdf7;--shadow:#65452f2d;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:12px}
+html,body{margin:0;min-height:100%;overscroll-behavior:none}
+body{
+  font-family:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 8% 0%,#fff9,transparent 28%),
+    linear-gradient(145deg,#f2d5aa,#edc6ad 48%,#b9d7ca);
+  padding:max(10px,env(safe-area-inset-top)) 10px max(14px,env(safe-area-inset-bottom));
+  touch-action:manipulation;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.app{width:min(900px,100%);margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;margin:4px 4px 12px}
+.kicker{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:.58}
+h1{font-size:clamp(32px,8vw,62px);line-height:.9;margin:4px 0 0;letter-spacing:-.055em}
+.iconbtn{border:0;width:48px;height:48px;border-radius:16px;background:#fff9;box-shadow:0 10px 25px #69472b24;font-size:21px}
+.panel{
+  background:#fffdf3e8;border:1px solid #fff;backdrop-filter:blur(15px);
+  border-radius:28px;box-shadow:0 24px 70px var(--shadow);padding:18px;
+}
+.save-title{font-size:24px;margin:0 0 6px}
+.muted{opacity:.68;font-size:13px}
+.saves{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.save-card{
+  background:#fff;border-radius:20px;padding:16px;text-align:left;min-height:145px;
+  box-shadow:0 10px 24px #6845291c;position:relative
+}
+.slot-main{width:100%;min-height:120px;border:0;background:transparent;text-align:left;padding:0;color:inherit;font:inherit}.save-card.empty .slot-main{text-align:center}
+.save-content{position:relative;z-index:2;pointer-events:none}
+.save-card .delete-save{z-index:3;pointer-events:auto}
+.save-card.empty{cursor:pointer}
+.save-card.empty{display:grid;place-items:center;text-align:center;border:2px dashed #b88665;background:#fff8ee}
+.save-name{font-size:21px;font-weight:1000;margin-bottom:4px}
+.save-meta{font-size:12px;opacity:.65;line-height:1.5}
+.delete-save{position:absolute;right:10px;top:10px;border:0;background:#f3e4dd;border-radius:999px;width:30px;height:30px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:12px;font-weight:900;margin:10px 0 5px}
+input,select{width:100%;border:2px solid transparent;border-radius:13px;padding:12px;background:#fff;outline:none}
+input:focus,select:focus{border-color:#7faf93}
+.primary{border:0;border-radius:14px;padding:12px 16px;background:#51392f;color:#fff;font-weight:950}
+.secondary{border:0;border-radius:14px;padding:12px 16px;background:#f0e2d4;color:#4a362d;font-weight:900}
+.modal{
+  position:fixed;inset:0;z-index:60;background:#281d18aa;display:grid;place-items:center;padding:16px
+}
+.modal-card{width:min(520px,100%);max-height:88vh;overflow:auto;background:#fffaf0;border-radius:25px;padding:20px;box-shadow:0 25px 80px #0005}
+.modal h2{margin:0 0 8px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.game-shell{position:relative;background:linear-gradient(145deg,#f3b56e,#dc8958);border:5px solid #fff7e9;border-radius:42px;padding:19px 16px 22px;box-shadow:0 28px 70px #65472c30,inset 0 -8px 0 #b6664438}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.brand{font-weight:1000;letter-spacing:.13em;font-size:12px;color:#743e2c}
+.top-actions{display:flex;gap:7px}
+.smalltop{border:0;border-radius:12px;padding:8px 10px;background:#fff9;font-weight:900}
+.screen{
+  position:relative;height:min(53vh,460px);min-height:380px;overflow:hidden;border:9px solid #604b40;border-radius:25px;
+  background:linear-gradient(#a9dceb 0 64%,#d7c29e 64%);box-shadow:inset 0 0 0 4px #8a7564,0 7px 0 #a96547;transition:.4s
+}
+.screen.dawn{background:linear-gradient(#e5a17e 0 64%,#d7c29e 64%)}
+.screen.evening{background:linear-gradient(#8f7895 0 64%,#c2a884 64%)}
+.screen.night{background:linear-gradient(#36435d 0 64%,#aa9b80 64%)}
+.weather{position:absolute;inset:1px;pointer-events:none;border-radius:15px;overflow:hidden;clip-path:inset(0 round 15px);-webkit-mask-image:-webkit-radial-gradient(white,black);transform:translateZ(0)}
+.sun{display:none!important;position:absolute;width:58px;height:58px;border-radius:50%;right:22px;top:20px;background:#ffe28d;box-shadow:0 0 0 12px #ffe28d2c}
+.night .sun{width:42px;height:42px;background:#fff3bd;box-shadow:none}
+.cloud{position:absolute;width:78px;height:24px;border-radius:99px;background:#fff9;left:24px;top:43px}
+.cloud:before,.cloud:after{content:"";position:absolute;border-radius:50%;background:inherit}
+.cloud:before{width:31px;height:31px;left:11px;top:-13px}.cloud:after{width:41px;height:41px;right:9px;top:-19px}
+.rain i{position:absolute;top:-20px;width:3px;height:18px;background:#cce8f5aa;animation:rain 1s linear infinite}
+@keyframes rain{to{transform:translateY(500px)}}
+.rug{position:absolute;left:50%;bottom:23px;transform:translateX(-50%);width:78%;height:58px;border-radius:50%;background:#d47d66;opacity:.5}
+.bubble{position:absolute;z-index:8;left:16px;top:15px;max-width:66%;padding:10px 13px;border-radius:16px 16px 16px 4px;background:#fffdf4;box-shadow:0 8px 24px #5c453328;font-size:13px;font-weight:900;opacity:1;transform:translateY(0);transition:opacity .35s ease,transform .35s ease}
+.bubble.is-hidden{opacity:0;transform:translateY(-7px);pointer-events:none}
+.stage{position:absolute;left:50%;bottom:20px;width:330px;height:300px;transform:translateX(-50%)}
+.shadow{position:absolute;left:64px;bottom:2px;width:205px;height:36px;border-radius:50%;background:#50382d3b;filter:blur(2px)}
+#pug{position:absolute;inset:0;transform-origin:50% 88%;cursor:pointer}
+#pug.idle{animation:breathe 2.3s ease-in-out infinite}
+#pug.jump{animation:jump .52s ease-in-out 4}
+#pug.eat{animation:eat .3s ease-in-out 6}
+#pug.pet{animation:pet .55s ease-in-out 3}
+#pug.shake{animation:shake .15s linear 10}
+#pug.sleep{animation:sleep .8s ease forwards}
+#pug.walk{animation:walk .48s ease-in-out 5}
+@keyframes breathe{0%,100%{transform:scale(var(--age-scale)) translateY(0)}50%{transform:scale(var(--age-scale)) translateY(4px) scaleY(.985)}}
+@keyframes jump{0%,100%{transform:scale(var(--age-scale)) translateY(0) rotate(0)}45%{transform:scale(var(--age-scale)) translateY(-35px) rotate(-4deg)}}
+@keyframes eat{0%,100%{transform:scale(var(--age-scale)) translateY(0)}50%{transform:scale(var(--age-scale)) translateY(9px)}}
+@keyframes pet{0%,100%{transform:scale(var(--age-scale)) rotate(0)}50%{transform:scale(calc(var(--age-scale) * 1.035)) rotate(-4deg)}}
+@keyframes shake{0%,100%{transform:scale(var(--age-scale)) translateX(0) rotate(0)}25%{transform:scale(var(--age-scale)) translateX(-7px) rotate(-2deg)}75%{transform:scale(var(--age-scale)) translateX(7px) rotate(2deg)}}
+@keyframes sleep{from{transform:scale(var(--age-scale)) translateY(0) rotate(0)}to{transform:scale(var(--age-scale)) translateY(12px) rotate(-2deg)}}
+@keyframes walk{25%{transform:translateX(-18px) rotate(-2deg)}75%{transform:translateX(18px) rotate(2deg)}}
+svg{width:100%;height:100%;overflow:visible}
+.sleeping .eye-open{transform:scaleY(.12);transform-origin:center}.sleeping .pupil,.sleeping .shine{opacity:0}
+.tongue{opacity:0}.happy .tongue,.playing .tongue{opacity:1}
+.blush{opacity:0}.happy .blush,.playing .blush{opacity:.55}
+.dirt{opacity:0}.dirty .dirt{opacity:.55}
+.sick-mark{opacity:0}.sick .sick-mark{opacity:1}
+.tail{transform-origin:253px 175px;animation:wag .75s ease-in-out infinite alternate}
+@keyframes wag{to{transform:rotate(17deg)}}
+.prop{position:absolute;opacity:0;pointer-events:none;z-index:9}.prop.show{opacity:1}
+#bowl{left:110px;bottom:4px;width:110px;height:38px;border-radius:6px 6px 35px 35px;background:#c6534e;border:4px solid #843b3b;text-align:center;padding-top:4px;color:#593924;font-weight:900}
+#waterBowl{left:112px;bottom:4px;width:106px;height:36px;border-radius:6px 6px 34px 34px;background:#72b7d3;border:4px solid #3d7f99;text-align:center;padding-top:3px;color:#dff7ff;font-weight:1000}
+#pug.critical{filter:grayscale(.45) brightness(.88)}
+#pug.critical .tail{animation:none}
+.critical-banner{display:none;margin:9px 0 0;padding:10px 12px;border-radius:14px;background:#f5d3cf;color:#7b2d28;font-size:12px;font-weight:900}
+.critical-banner.show{display:block}
+#ball{left:7px;bottom:15px;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#f2c94c;border:4px solid #bd7d28;font-size:22px}
+#ball.show{animation:ball 1.8s ease-in-out}
+@keyframes ball{40%{transform:translate(245px,-130px) rotate(300deg)}75%{transform:translate(125px,-45px) rotate(500deg)}}
+#zzz{right:13px;top:55px;font-size:30px;font-weight:1000;color:#fff;letter-spacing:5px}
+#hearts{position:absolute;inset:0;z-index:10;pointer-events:none}
+.heart{position:absolute;left:50%;top:52%;font-size:28px;animation:fly .95s ease-out forwards}
+@keyframes fly{0%{opacity:0;transform:translate(-50%,0) scale(.3)}20%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--r)) scale(1.25)}}
+.info{display:flex;justify-content:space-between;gap:8px;margin:12px 0;align-items:center}
+.day-progress{display:flex;align-items:center;gap:9px;background:#fff9;padding:7px 10px;border-radius:999px;box-shadow:0 6px 15px #704a3420}
+.ring{--p:0;position:relative;width:34px;height:34px;border-radius:50%;background:conic-gradient(#7eb486 calc(var(--p)*1%),#dfcfbd 0)}
+.ring:after{content:"";position:absolute;inset:5px;border-radius:50%;background:#fff8ea}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;z-index:1;font-size:9px;font-weight:1000}
+.pill{background:#fff9;padding:8px 11px;border-radius:999px;font-weight:900;box-shadow:0 6px 15px #704a3420;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{background:#fff9;border-radius:14px;padding:8px;min-width:0}
+.stathead{display:flex;justify-content:space-between;font-size:11px;font-weight:900;gap:4px;margin-bottom:5px}
+.track{height:9px;border-radius:99px;background:#ddcfbd;overflow:hidden}.fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,#e88b75,#79b390);transition:width .3s}.fill.low{background:linear-gradient(90deg,#cf5c55,#e3ae54)}
+.vitals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.vital{background:#fff7e9;border-radius:13px;padding:8px;text-align:center;font-size:12px;font-weight:900}
+.tabs{display:flex;gap:7px;margin-top:13px;overflow:auto;padding-bottom:2px}
+.tab{border:0;border-radius:999px;padding:9px 13px;background:#f3dfca;font-weight:900;white-space:nowrap}.tab.active{background:#51392f;color:#fff}
+.action-pane{margin-top:10px;display:none}.action-pane.active-pane{display:block!important}
+.actions{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.action{border:0;min-height:72px;border-radius:17px;background:#fff7ef;box-shadow:0 8px 18px #6b45262b;font-weight:950;color:var(--ink);display:grid;place-items:center;gap:2px;padding:7px 3px}
+.action:active{transform:scale(.95)}.action:disabled{opacity:.5}.ico{font-size:23px}
+.inventory,.shop,.foodgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.item{border:0;border-radius:15px;background:#fff;padding:11px;text-align:left;box-shadow:0 7px 17px #6b45261d}
+.item b{display:block}.item small{opacity:.64}.count{float:right;background:#eee0d2;border-radius:999px;padding:2px 7px}
+.minigames{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gamebtn{border:0;border-radius:16px;padding:14px;background:#fff;font-weight:950;text-align:left}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:9px;margin-top:12px;font-size:11px;color:#704633}
+.toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translate(-50%,30px);opacity:0;background:#2f2723;color:#fff;padding:11px 16px;border-radius:999px;font-weight:900;transition:.25s;z-index:80}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:720px){
+  .saves{grid-template-columns:1fr}.game-shell{border-radius:30px;padding:15px 10px 19px}.screen{height:410px;min-height:0;border-width:8px}
+  .stats{grid-template-columns:repeat(2,1fr)}.actions{grid-template-columns:repeat(3,1fr)}.inventory,.shop,.foodgrid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:390px){
+  .stage{transform:translateX(-50%) scale(.88);transform-origin:center bottom}.screen{height:385px}.bubble{font-size:12px}.vitals{grid-template-columns:1fr 1fr}.foot{align-items:flex-start;flex-direction:column}
+}
+
+.roombar{display:flex;gap:7px;margin:10px 0;overflow:auto}
+.roombtn{border:0;border-radius:999px;padding:8px 12px;background:#fff8;font-weight:900;white-space:nowrap}
+.roombtn.active{background:#51392f;color:#fff}
+.screen.garden{background:linear-gradient(#9ed8eb 0 56%,#8ec676 56% 84%,#6fa65f 84%)}
+.screen.bedroom{background:linear-gradient(#9ba6c8 0 62%,#c9b497 62% 86%,#aa8e72 86%)}
+.screen.bathroom{background:linear-gradient(#b8e0e7 0 62%,#d7eceb 62% 86%,#b8d4d3 86%)}
+.room-deco{position:absolute;inset:0;pointer-events:none;z-index:0;border-radius:15px;overflow:hidden;clip-path:inset(1px round 15px);-webkit-mask-image:-webkit-radial-gradient(white,black);transform:translateZ(0)}
+.room-deco svg{width:100%;height:100%;display:block;border-radius:14px;object-fit:cover}
+.accessory-layer{pointer-events:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+.outfit-cap,.outfit-crown,.outfit-bow,.outfit-glasses{display:none}
+#pug.wearing-cap .outfit-cap{display:block}
+#pug.wearing-crown .outfit-crown{display:block}
+#pug.wearing-bow .outfit-bow{display:block}
+#pug.wearing-glasses .outfit-glasses{display:block}
+.poop{position:absolute;z-index:7;right:46px;bottom:24px;font-size:43px;filter:drop-shadow(0 4px 3px #0003)}
+.personality{background:#fff4dd;border-radius:14px;padding:9px 11px;margin-top:8px;font-size:12px;font-weight:900}
+.event-banner{display:none;margin:9px 0 0;padding:10px 12px;border-radius:14px;font-size:12px;font-weight:900;background:#fff4c7;box-shadow:0 6px 15px #704a3420}
+.event-banner.show{display:block}
+.screen.event-market{box-shadow:inset 0 0 0 4px #8a7564,0 7px 0 #a96547,0 0 0 5px #e9b84c}
+.screen.event-picnic{filter:saturate(1.08)}
+.screen.event-rainbow:after{content:"";position:absolute;inset:0;border-radius:14px;overflow:hidden;pointer-events:none;background:linear-gradient(115deg,transparent 15%,rgba(255,120,120,.10),rgba(255,220,110,.10),rgba(100,210,150,.10),rgba(100,160,255,.10),transparent 85%)}
+.screen.event-treasure{box-shadow:inset 0 0 0 4px #8a7564,0 7px 0 #a96547,0 0 0 5px #d7a94a}
+.screen.event-spa{filter:brightness(1.03) saturate(.95)}
+.achievements{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.achievement{background:#fff;border-radius:15px;padding:11px;opacity:.48}
+.achievement.unlocked{opacity:1;box-shadow:0 7px 17px #6b45261d}
+.achievement b{display:block}
+.calendar-card{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.calendar-item{background:#fff7e9;border-radius:13px;padding:8px;text-align:center;font-size:12px;font-weight:900}
+.outfit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.outfit{border:0;border-radius:15px;background:#fff;padding:12px;font-weight:900}
+.outfit.active{outline:3px solid #7eb486}
+@media(max-width:720px){.achievements,.outfit-grid{grid-template-columns:repeat(2,1fr)}}
+
+
+#pug.walk{animation:walkCycle 1.8s ease-in-out 1}
+#pug.play-seq{animation:playSeq 2.4s ease-in-out 1}
+#pug.sleep-seq{animation:sleepSeq 2.8s ease-in-out 1}
+#pug.feed-seq{animation:feedSeq 2s ease-in-out 1}
+#pug.drink-seq{animation:feedSeq 1.8s ease-in-out 1}
+#pug.wash-seq{animation:washSeq 2s ease-in-out 1}
+#pug.pet-seq{animation:petSeq 1.8s ease-in-out 1}
+#pug.walk .front-left,#pug.walk .back-right{animation:legA .45s ease-in-out 4}
+#pug.walk .front-right,#pug.walk .back-left{animation:legB .45s ease-in-out 4}
+#pug.play-seq .tail{animation:wagFast .22s ease-in-out 10 alternate}
+#pug.sleep-seq .tail{animation:none}
+#pug.feed-seq .head-group{animation:nod .35s ease-in-out 5}
+#pug.wash-seq .body-group{animation:bodyShake .16s linear 10}
+@keyframes walkCycle{
+  0%{transform:scale(var(--age-scale)) translateX(-105px) translateY(0)}
+  20%{transform:scale(var(--age-scale)) translateX(-55px) translateY(-4px)}
+  50%{transform:scale(var(--age-scale)) translateX(0) translateY(0)}
+  80%{transform:scale(var(--age-scale)) translateX(55px) translateY(-4px)}
+  100%{transform:scale(var(--age-scale)) translateX(105px) translateY(0)}
+}
+@keyframes playSeq{
+  0%{transform:scale(var(--age-scale)) translateY(0) rotate(0)}
+  18%{transform:scale(var(--age-scale)) translateY(-28px) rotate(-7deg)}
+  35%{transform:scale(var(--age-scale)) translateX(34px) translateY(-8px) rotate(8deg)}
+  55%{transform:scale(var(--age-scale)) translateX(-24px) translateY(-18px) rotate(-6deg)}
+  78%{transform:scale(var(--age-scale)) translateY(-38px) rotate(4deg)}
+  100%{transform:scale(var(--age-scale)) translateY(0) rotate(0)}
+}
+@keyframes sleepSeq{
+  0%{transform:scale(var(--age-scale)) translateY(0) rotate(0) scale(1)}
+  35%{transform:scale(var(--age-scale)) translateY(8px) rotate(-4deg) scaleY(.98)}
+  65%{transform:scale(var(--age-scale)) translateY(12px) rotate(-7deg) scaleY(.95)}
+  100%{transform:scale(var(--age-scale)) translateY(14px) rotate(-7deg) scaleY(.95)}
+}
+@keyframes feedSeq{
+  0%,100%{transform:scale(var(--age-scale)) translateY(0)}
+  15%,45%,75%{transform:scale(var(--age-scale)) translateY(8px) rotate(1deg)}
+  30%,60%,90%{transform:scale(var(--age-scale)) translateY(1px) rotate(-1deg)}
+}
+@keyframes washSeq{
+  0%,100%{transform:scale(var(--age-scale)) translateX(0) rotate(0)}
+  20%{transform:scale(var(--age-scale)) translateX(-9px) rotate(-3deg)}
+  40%{transform:scale(var(--age-scale)) translateX(8px) rotate(3deg)}
+  60%{transform:scale(var(--age-scale)) translateX(-6px) rotate(-2deg)}
+  80%{transform:scale(var(--age-scale)) translateX(5px) rotate(2deg)}
+}
+@keyframes petSeq{
+  0%,100%{transform:scale(var(--age-scale)) rotate(0) scale(1)}
+  30%{transform:scale(var(--age-scale)) rotate(-4deg) scale(1.04)}
+  60%{transform:scale(var(--age-scale)) rotate(3deg) scale(1.03)}
+}
+@keyframes legA{50%{transform:rotate(11deg) translateY(-3px)}}
+@keyframes legB{50%{transform:rotate(-11deg) translateY(3px)}}
+@keyframes wagFast{to{transform:rotate(26deg)}}
+@keyframes nod{50%{transform:translateY(7px)}}
+@keyframes bodyShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.memory-card{position:relative;aspect-ratio:1;border:0;background:transparent;perspective:700px;padding:0}
+.memory-inner{position:absolute;inset:0;transition:transform .35s;transform-style:preserve-3d}
+.memory-card.revealed .memory-inner,.memory-card.matched .memory-inner{transform:rotateY(180deg)}
+.memory-face{position:absolute;inset:0;border-radius:16px;backface-visibility:hidden;display:grid;place-items:center;box-shadow:0 7px 16px #4b33251f}
+.memory-back{background:linear-gradient(145deg,#68493a,#3f2d26)}
+.memory-back:before{content:"";width:42%;height:42%;border-radius:50% 50% 45% 45%;background:#f0c88f;box-shadow:-18px -16px 0 -7px #f0c88f,18px -16px 0 -7px #f0c88f}
+.memory-front{background:#fff7e8;transform:rotateY(180deg);padding:8px}
+.memory-front svg{width:82%;height:82%}
+.memory-card.matched{opacity:.58}
+
+
+.mobile-quick-actions{grid-template-columns:repeat(3,1fr);row-gap:5px}
+  body{padding-bottom:calc(145px + env(safe-area-inset-bottom))}
+  .quick-action{grid-template-columns:auto 1fr;justify-content:center}
+  .quick-action span{font-size:19px}
+  .quick-action small{font-size:10px}
+}
+
+
+.screen:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:40;
+  pointer-events:none;
+  border-radius:16px;
+  box-shadow:inset 0 0 0 2px rgba(96,75,64,.18);
+  -webkit-mask-image:-webkit-radial-gradient(white,black)
+}
+
+
+@media(max-width:700px){
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+  .game-shell{padding-bottom:18px}
+  .screen{height:min(56vw,430px);min-height:350px;max-height:430px}
+
+  body.overlay-open .tabs{display:none!important}
+  .tabs{
+    position:sticky;
+    bottom:max(8px,env(safe-area-inset-bottom));
+    z-index:115;
+    display:flex;
+    gap:6px;
+    margin:10px -4px 0;
+    padding:7px;
+    border-radius:18px;
+    background:rgba(255,249,238,.96);
+    box-shadow:0 12px 32px rgba(56,36,25,.25);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    overflow-x:auto;
+    scrollbar-width:none
+  }
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{
+    flex:0 0 auto;
+    padding:9px 12px;
+    font-size:12px
+  }
+  .action-pane{
+    margin-top:9px;
+    scroll-margin-top:10px
+  }
+  .vitals{margin-top:14px}
+  .calendar-card{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+@media(max-width:430px){
+  body{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+  .screen{height:min(64vw,390px);min-height:320px;max-height:390px}
+  .tabs{
+    bottom:max(6px,env(safe-area-inset-bottom));
+    border-radius:16px
+  }
+  .tab{padding:8px 10px;font-size:11px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .calendar-card{grid-template-columns:1fr}
+}
+
+
+/* Fließendes Wachstum und Welpenproportionen */
+#pug{
+  --age-scale:.70;
+  --head-scale:1.18;
+  --eye-scale:1.12;
+  --leg-scale:.78;
+  --body-scale:.92;
+  --motion-bounce:1;
+  transform:scale(var(--age-scale));
+  transform-origin:50% 88%;
+  transition:transform .8s ease
+}
+#pug .head-group{
+  transform-box:fill-box;
+  transform-origin:center;
+  transform:scale(var(--head-scale))
+}
+#pug .eye-open{
+  transform-box:fill-box;
+  transform-origin:center;
+  transform:scale(var(--eye-scale))
+}
+#pug .front-left,
+#pug .front-right,
+#pug .back-left,
+#pug .back-right{
+  transform-box:fill-box;
+  transform-origin:50% 0%;
+  transform:scaleY(var(--leg-scale))
+}
+#pug .body-group{
+  transform-box:fill-box;
+  transform-origin:center;
+}
+#pug.puppy-motion.idle{animation:puppyBreathe 1.55s ease-in-out infinite}
+#pug.puppy-motion.walk{animation:puppyWalkCycle 1.55s ease-in-out 1}
+#pug.puppy-motion.play-seq{animation:puppyPlaySeq 2.2s ease-in-out 1}
+#pug.puppy-motion.pet-seq{animation:puppyPetSeq 1.7s ease-in-out 1}
+@keyframes puppyBreathe{
+  0%,100%{transform:scale(var(--age-scale)) translateY(0) rotate(0)}
+  35%{transform:scale(var(--age-scale)) translateY(-3px) rotate(-1.5deg)}
+  70%{transform:scale(var(--age-scale)) translateY(2px) rotate(1deg)}
+}
+@keyframes puppyWalkCycle{
+  0%{transform:scale(var(--age-scale)) translateX(-88px) translateY(0) rotate(-2deg)}
+  20%{transform:scale(var(--age-scale)) translateX(-48px) translateY(-10px) rotate(3deg)}
+  40%{transform:scale(var(--age-scale)) translateX(-12px) translateY(0) rotate(-2deg)}
+  60%{transform:scale(var(--age-scale)) translateX(24px) translateY(-11px) rotate(3deg)}
+  80%{transform:scale(var(--age-scale)) translateX(62px) translateY(0) rotate(-2deg)}
+  100%{transform:scale(var(--age-scale)) translateX(94px) translateY(-4px) rotate(2deg)}
+}
+@keyframes puppyPlaySeq{
+  0%,100%{transform:scale(var(--age-scale)) translateY(0) rotate(0)}
+  15%{transform:scale(var(--age-scale)) translateY(-24px) rotate(-8deg)}
+  32%{transform:scale(var(--age-scale)) translateX(28px) translateY(-8px) rotate(10deg)}
+  50%{transform:scale(var(--age-scale)) translateX(-20px) translateY(-20px) rotate(-8deg)}
+  70%{transform:scale(var(--age-scale)) translateY(-34px) rotate(5deg)}
+  86%{transform:scale(var(--age-scale)) translateY(-8px) rotate(-3deg)}
+}
+@keyframes puppyPetSeq{
+  0%,100%{transform:scale(var(--age-scale)) rotate(0)}
+  30%{transform:scale(calc(var(--age-scale) * 1.03)) rotate(-5deg)}
+  60%{transform:scale(calc(var(--age-scale) * 1.02)) rotate(4deg)}
+}
+
+
+}
+
+
+/* PugLife 1.6.5 – ausschließlich repariertes Hauptmenü auf Basis 1.6.4 */
+.clean-main-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin:4px 4px 14px;
+}
+.clean-main-header h1{
+  margin:0;
+  font-size:clamp(46px,9vw,72px);
+  line-height:.92;
+  letter-spacing:-.055em;
+}
+#saveScreen{
+  max-width:760px;
+  margin:0 auto;
+  padding:clamp(22px,4vw,34px);
+  text-align:center;
+}
+#saveScreen>.muted{
+  max-width:560px;
+  margin-left:auto;
+  margin-right:auto;
+  line-height:1.5;
+}
+.saves{
+  display:grid;
+  grid-template-columns:1fr!important;
+  gap:16px;
+  max-width:620px;
+  margin:22px auto 0;
+}
+.save-card{
+  width:100%;
+  min-height:0;
+  padding:20px;
+  border-radius:22px;
+  text-align:center;
+}
+.slot-main{
+  width:100%;
+  min-height:0;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  padding:0;
+  text-align:center;
+}
+.save-name{
+  margin:0;
+  font-size:26px;
+  font-weight:1000;
+  text-align:center;
+}
+.save-meta{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  font-size:13px;
+  line-height:1.4;
+  opacity:1;
+}
+.save-meta br{display:none}
+.save-meta{
+  color:transparent;
+  font-size:0;
+}
+.save-meta::before{
+  content:attr(data-placeholder);
+}
+/* Die drei vorhandenen Zeilen bleiben als Text erhalten, bekommen aber wieder volle Breite. */
+.save-card:not(.empty) .save-meta{
+  display:block;
+  color:inherit;
+  font-size:14px;
+  line-height:1.65;
+  padding:12px 14px;
+  border-radius:14px;
+  background:#f7eee2;
+  opacity:.78;
+}
+.save-card:not(.empty) .slot-main>div:last-child{
+  width:100%;
+  margin:4px 0 0!important;
+  min-height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:14px 18px;
+  border-radius:16px;
+  background:#51392f;
+  color:#fff;
+  font-size:18px;
+  font-weight:1000!important;
+  box-shadow:0 10px 20px rgba(74,49,35,.18);
+}
+.save-card.empty{
+  min-height:0;
+  padding:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+}
+.save-card.empty .slot-main{
+  min-height:82px;
+  padding:16px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  border-radius:18px;
+  background:#51392f;
+  color:#fff;
+  text-align:center;
+  box-shadow:0 12px 24px rgba(73,48,34,.22);
+}
+.save-card.empty .slot-main div{font-size:30px!important}
+.save-card.empty .slot-main b{font-size:18px}
+@media(max-width:520px){
+  .clean-main-header{margin-top:0;margin-bottom:10px}
+  #saveScreen{padding:18px 14px 22px}
+  .save-card{padding:16px}
+  .save-name{font-size:23px}
+  .save-card:not(.empty) .save-meta{font-size:13px}
+}
+
+
+/* PugLife 1.6.6 – Mops-Bildschirm bleibt auf allen Displays sichtbar */
+.screen{
+  position:sticky!important;
+  top:max(8px,env(safe-area-inset-top))!important;
+  z-index:90!important;
+  margin-bottom:14px;
+  box-shadow:
+    inset 0 0 0 4px #8a7564,
+    0 7px 0 #a96547,
+    0 14px 28px rgba(70,48,35,.24);
+  transform:translateZ(0);
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+}
+
+/* Alles unterhalb der Szene scrollt normal weiter */
+.info,
+.stats,
+.tabs,
+.action-pane,
+.vitals,
+.calendar-card,
+.personality,
+.event-banner,
+.critical-banner,
+.foot{
+  position:relative;
+  z-index:1;
+}
+
+/* Auf sehr kleinen Displays bleibt die Szene kompakter */
+@media (max-width:430px), (max-height:620px){
+  .screen{
+    top:max(4px,env(safe-area-inset-top))!important;
+    height:min(58vh,350px);
+    min-height:280px;
+  }
+}
+
+
+/* PugLife 1.6.7 – kompakter Seitenabschluss ohne großen Leerraum */
+html{
+  min-height:100%;
+  height:auto;
+}
+
+body{
+  min-height:100dvh;
+  height:auto;
+  padding-bottom:max(12px,env(safe-area-inset-bottom))!important;
+  margin-bottom:0!important;
+}
+
+.app{
+  margin-bottom:0!important;
+  padding-bottom:0!important;
+}
+
+.game-shell{
+  margin-bottom:0!important;
+}
+
+.foot{
+  margin-bottom:0!important;
+  padding-bottom:0!important;
+}
+
+/* Frühere mobile Zusatzabstände überschreiben */
+@media(max-width:700px){
+  body{
+    padding-bottom:max(12px,env(safe-area-inset-bottom))!important;
+  }
+}
+
+@media(max-width:430px){
+  body{
+    padding-bottom:max(10px,env(safe-area-inset-bottom))!important;
+  }
+}
+
+
+/* PugLife 1.6.8 – responsive Menüs auf kleinen Displays */
+@media (max-width:600px){
+
+  /* Räume: Wohnzimmer, Bad, Schlafzimmer, Garten */
+  .roombar{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+    overflow:visible!important;
+    overflow-x:visible!important;
+    white-space:normal!important;
+    padding-bottom:0!important;
+  }
+
+  .roombtn{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:10px 8px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    white-space:normal!important;
+  }
+
+  /* Hauptmenüs: Pflege, Futter, Minispiele, Inventar usw. */
+  .tabs{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+    overflow:visible!important;
+    overflow-x:visible!important;
+    white-space:normal!important;
+    position:relative!important;
+    bottom:auto!important;
+    padding:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+
+  .tab{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:10px 8px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    white-space:normal!important;
+  }
+
+  /* Aktionsbuttons im geöffneten Untermenü gleich groß */
+  .actions,
+  .foodgrid,
+  .drinkgrid,
+  .shopgrid,
+  .inventorygrid,
+  .outfitgrid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+    align-items:stretch!important;
+  }
+
+  .action,
+  .item,
+  .shopitem,
+  .inventoryitem,
+  .outfititem{
+    width:100%!important;
+    min-width:0!important;
+    min-height:88px!important;
+    height:100%!important;
+    margin:0!important;
+    padding:12px 8px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    white-space:normal!important;
+  }
+}
+
+/* Sehr schmale Displays: weiterhin zwei Spalten, aber kompakter */
+@media (max-width:360px){
+  .roombtn,
+  .tab{
+    font-size:13px!important;
+    padding:9px 6px!important;
+  }
+
+  .action,
+  .item,
+  .shopitem,
+  .inventoryitem,
+  .outfititem{
+    min-height:82px!important;
+    font-size:13px!important;
+  }
+}
+
+
+/* PugLife 1.6.10 – stabile Dialoge und saubere Spielstandsdaten */
+.modal{
+  z-index:1000!important;
+}
+.modal:not(.hidden){
+  display:grid!important;
+}
+body.overlay-open .screen,
+body.settings-open .screen,
+body.create-open .screen{
+  position:relative!important;
+  top:auto!important;
+  z-index:1!important;
+  box-shadow:inset 0 0 0 4px #8a7564,0 7px 0 #a96547!important;
+}
+/* Kein dauerhaftes Scroll-Lock bei Minispielen oder Einstellungen */
+body.overlay-open,
+body.settings-open,
+body.create-open{
+  overflow:auto!important;
+  touch-action:auto!important;
+}
+.save-meta{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:10px!important;
+  color:inherit!important;
+  font-size:14px!important;
+  line-height:1.35!important;
+  opacity:1!important;
+  background:transparent!important;
+  padding:0!important;
+}
+.save-meta span{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:46px;
+  padding:10px 12px;
+  border-radius:13px;
+  background:#f7eee2;
+  text-align:center;
+  white-space:normal;
+}
+@media(max-width:600px){
+  .save-meta{grid-template-columns:1fr!important}
+}
+
+</style>
+</head>
+<body class="puglife-adaptive">
+<div class="app">
+<header class="clean-main-header">
+  <h1>PugLife</h1>
+  <div aria-hidden="true"></div>
+</header>
+
+<section id="saveScreen" class="panel">
+  <div class="muted">Willkommen in der Welt von PugLife! Dein Mops freut sich auf dich.</div>
+  <div id="saveList" class="saves"></div>
+  <div id="storageStatus" class="muted" style="margin-top:10px"></div><div class="muted" style="margin-top:8px">Version 1.6.10</div>
+</section>
+
+<section id="gameScreen" class="game-shell hidden">
+  <div class="topline">
+    <div class="brand">PUGLIFE • POCKET PUG</div>
+    <div class="top-actions">
+      <button class="smalltop" id="settingsBtn">⚙️</button>
+      <button class="smalltop" id="switchBtn">Hauptmenü</button>
+    </div>
+  </div>
+
+  <div class="roombar">
+    <button class="roombtn active" data-room="living">Wohnzimmer</button>
+    <button class="roombtn" data-room="garden">Garten</button>
+    <button class="roombtn" data-room="bedroom">Schlafzimmer</button>
+    <button class="roombtn" data-room="bathroom">Badezimmer</button>
+  </div>
+  <div id="screen" class="screen living">
+    <div id="roomDeco" class="room-deco"><svg viewBox="0 0 800 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <rect width="800" height="310" fill="#e6d2b8"/>
+  <rect y="310" width="800" height="150" fill="#c8a77f"/>
+  <rect x="0" y="300" width="800" height="14" fill="#a98464"/>
+  <rect x="500" y="205" width="210" height="105" rx="24" fill="#a97868"/>
+  <rect x="520" y="175" width="170" height="70" rx="22" fill="#bd8a79"/>
+  <rect x="545" y="190" width="55" height="42" rx="15" fill="#e9d7c8"/>
+  <rect x="610" y="190" width="55" height="42" rx="15" fill="#e9d7c8"/>
+  <rect x="120" y="86" width="170" height="132" rx="14" fill="#f7ecdc" stroke="#9a7966" stroke-width="10"/>
+  <rect x="143" y="109" width="124" height="86" fill="#96c7da"/>
+  <rect x="345" y="165" width="94" height="145" rx="10" fill="#8a6b58"/>
+  <rect x="355" y="178" width="74" height="22" rx="5" fill="#d3bda8"/>
+  <rect x="355" y="210" width="74" height="22" rx="5" fill="#d3bda8"/>
+  <rect x="355" y="242" width="74" height="22" rx="5" fill="#d3bda8"/>
+  <ellipse cx="310" cy="395" rx="190" ry="44" fill="#c77f67" opacity=".5"/>
+  <rect x="60" y="200" width="26" height="110" rx="12" fill="#826145"/>
+  <circle cx="73" cy="170" r="50" fill="#6da467"/>
+</svg></div>
+    <div class="weather" id="weather"><div class="sun"></div><div class="cloud"></div><div id="rain" class="rain"></div></div>
+    <div class="rug"></div>
+    <div id="bubble" class="bubble">Hallo!</div>
+    <div class="stage">
+      <div class="shadow"></div>
+      <div id="pug" class="idle happy">
+        <svg viewBox="0 0 330 300" role="img" aria-label="Niedlicher Mops">
+          <defs>
+            <linearGradient id="fur" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e1c08e"/><stop offset="1" stop-color="#ad8055"/></linearGradient>
+            <linearGradient id="darkfur" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5c453d"/><stop offset="1" stop-color="#322522"/></linearGradient>
+            <filter id="soft"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-opacity=".22"/></filter>
+          </defs>
+          <g filter="url(#soft)" class="body-group">
+            <g class="tail"><path d="M245 185 C301 153 301 216 265 216 C245 216 246 195 260 193 C273 191 279 202 270 207" fill="none" stroke="#a97a50" stroke-width="18" stroke-linecap="round"/></g>
+            <ellipse cx="165" cy="214" rx="91" ry="67" fill="url(#fur)"/>
+            <ellipse class="front-left" cx="111" cy="246" rx="31" ry="47" fill="#ba8d61"/><ellipse class="front-right" cx="219" cy="246" rx="31" ry="47" fill="#ba8d61"/>
+            <ellipse cx="111" cy="275" rx="35" ry="15" fill="#8e6649"/><ellipse cx="219" cy="275" rx="35" ry="15" fill="#8e6649"/>
+            <path d="M75 115 C37 82 40 39 88 58 L111 97Z" fill="url(#darkfur)"/><path d="M255 115 C293 82 290 39 242 58 L219 97Z" fill="url(#darkfur)"/>
+            <g class="head-group"><ellipse cx="165" cy="131" rx="103" ry="94" fill="url(#fur)"/>
+            <path d="M105 65 Q165 35 225 65 Q214 100 165 103 Q116 100 105 65Z" fill="#7a5a48" opacity=".32"/>
+            <path d="M126 54 Q165 73 204 54" fill="none" stroke="#765544" stroke-width="5" stroke-linecap="round" opacity=".55"/>
+            <path d="M118 72 Q165 88 212 72" fill="none" stroke="#765544" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+            <g class="eye-open">
+              <ellipse cx="119" cy="120" rx="33" ry="38" fill="#493631"/><ellipse cx="211" cy="120" rx="33" ry="38" fill="#493631"/>
+              <ellipse cx="121" cy="120" rx="22" ry="27" fill="#171313" class="pupil"/><ellipse cx="209" cy="120" rx="22" ry="27" fill="#171313" class="pupil"/>
+              <circle cx="112" cy="109" r="8" fill="#fff" class="shine"/><circle cx="200" cy="109" r="8" fill="#fff" class="shine"/>
+            </g>
+            <ellipse cx="165" cy="179" rx="67" ry="56" fill="url(#darkfur)"/>
+            <path d="M128 157 Q165 132 202 157 L198 195 Q165 221 132 195Z" fill="#4c3934"/>
+            <path d="M139 158 Q165 143 191 158 Q188 178 165 181 Q142 178 139 158Z" fill="#1c1716"/>
+            <ellipse cx="155" cy="161" rx="7" ry="4" fill="#fff" opacity=".18"/>
+            <path d="M165 180 L165 192" stroke="#171313" stroke-width="5" stroke-linecap="round"/>
+            <path d="M165 192 Q143 209 127 193 M165 192 Q187 209 203 193" fill="none" stroke="#171313" stroke-width="5" stroke-linecap="round"/>
+            <path class="tongue" d="M151 202 Q165 223 179 202 L178 229 Q165 244 152 229Z" fill="#ed8d9d" stroke="#382421" stroke-width="4"/>
+            <ellipse class="blush" cx="91" cy="169" rx="19" ry="10" fill="#e77c7c"/><ellipse class="blush" cx="239" cy="169" rx="19" ry="10" fill="#e77c7c"/>
+            </g><g class="dirt" fill="#5e493d"><circle cx="91" cy="203" r="9"/><circle cx="238" cy="222" r="7"/><circle cx="149" cy="258" r="8"/></g>
+            <g class="sick-mark"><circle cx="254" cy="92" r="17" fill="#d86e67"/><path d="M247 92h14M254 85v14" stroke="#fff" stroke-width="4" stroke-linecap="round"/></g>
+            <g class="accessory-layer">
+              <g class="outfit-cap">
+                <path d="M95 68 Q165 12 235 68 L220 93 Q165 65 110 93Z" fill="#d9584f" stroke="#7f302e" stroke-width="5"/>
+                <path d="M200 74 Q238 78 250 92 Q222 98 196 91Z" fill="#b83e3a" stroke="#7f302e" stroke-width="4"/>
+              </g>
+              <g class="outfit-crown">
+                <path d="M108 68 L124 18 L153 48 L176 8 L203 47 L229 18 L239 70Z" fill="#f0c84f" stroke="#9c7420" stroke-width="5"/>
+                <circle cx="128" cy="25" r="6" fill="#e66d6d"/><circle cx="176" cy="18" r="6" fill="#6da8df"/><circle cx="224" cy="25" r="6" fill="#79b77a"/>
+              </g>
+              <g class="outfit-bow">
+                <path d="M143 220 Q116 198 111 225 Q119 249 146 233Z" fill="#e8758f" stroke="#8e3e52" stroke-width="4"/>
+                <path d="M187 220 Q214 198 219 225 Q211 249 184 233Z" fill="#e8758f" stroke="#8e3e52" stroke-width="4"/>
+                <circle cx="165" cy="227" r="14" fill="#c95773" stroke="#8e3e52" stroke-width="4"/>
+              </g>
+              <g class="outfit-glasses">
+                <rect x="84" y="94" width="67" height="46" rx="17" fill="#252020" stroke="#111" stroke-width="5"/>
+                <rect x="179" y="94" width="67" height="46" rx="17" fill="#252020" stroke="#111" stroke-width="5"/>
+                <path d="M151 111 Q165 101 179 111" fill="none" stroke="#111" stroke-width="6"/>
+                <path d="M84 108 L67 101 M246 108 L263 101" stroke="#111" stroke-width="5" stroke-linecap="round"/>
+                <path d="M96 104 L125 104" stroke="#fff" stroke-width="5" opacity=".35"/>
+                <path d="M191 104 L220 104" stroke="#fff" stroke-width="5" opacity=".35"/>
+              </g>
+            </g>
+
+          </g>
+        </svg>
+      </div>
+      <div id="poop" class="poop hidden">💩</div>
+      <div id="hearts"></div><div id="bowl" class="prop">● ● ●</div><div id="waterBowl" class="prop">≈≈</div><div id="ball" class="prop">★</div><div id="zzz" class="prop">Z z z</div>
+    </div>
+  </div>
+
+  <div class="info">
+    <div class="pill"><span id="petName">Mops</span> · Tag <span id="day">1</span></div>
+    <div class="day-progress">
+      <div id="dayRing" class="ring"><span id="dayPercent">0%</span></div>
+      <div><b><span id="weekday">Montag</span></b><br><span id="phase">Welpe</span> · <span id="clock">08:00</span></div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stathead"><span>🍖 Satt</span><b id="hungerN">80</b></div><div class="track"><div id="hunger" class="fill"></div></div></div>
+    <div class="stat"><div class="stathead"><span>💧 Durst</span><b id="thirstN">85</b></div><div class="track"><div id="thirst" class="fill"></div></div></div>
+    <div class="stat"><div class="stathead"><span>❤️ Liebe</span><b id="loveN">75</b></div><div class="track"><div id="love" class="fill"></div></div></div>
+    <div class="stat"><div class="stathead"><span>🎾 Spaß</span><b id="funN">70</b></div><div class="track"><div id="fun" class="fill"></div></div></div>
+    <div class="stat"><div class="stathead"><span>⚡ Energie</span><b id="energyN">85</b></div><div class="track"><div id="energy" class="fill"></div></div></div>
+    <div class="stat"><div class="stathead"><span>🫧 Sauber</span><b id="cleanN">90</b></div><div class="track"><div id="clean" class="fill"></div></div></div>
+    <div class="stat"><div class="stathead"><span>💚 Gesundheit</span><b id="healthN">100</b></div><div class="track"><div id="health" class="fill"></div></div></div>
+    <div class="stat"><div class="stathead"><span>🚶 Bewegung</span><b id="exerciseN">60</b></div><div class="track"><div id="exercise" class="fill"></div></div></div>
+    <div class="stat"><div class="stathead"><span>🎓 Erfahrung</span><b id="xpN">0</b></div><div class="track"><div id="xp" class="fill"></div></div></div>
+  </div>
+
+
+
+  <div class="tabs" id="tabsNav">
+    <button class="tab active" data-tab="care">Pflege</button>
+    <button class="tab" data-tab="food">Futter</button>
+    <button class="tab" data-tab="games">Minispiele</button>
+    <button class="tab" data-tab="inventory">Inventar</button>
+    <button class="tab" data-tab="shop">Laden</button>
+    <button class="tab" data-tab="outfits">Kleidung</button>
+    <button class="tab" data-tab="achievements">Erfolge</button>
+  </div>
+
+  <div id="pane-care" class="action-pane">
+    <div class="actions">
+      <button class="action" data-act="pet"><span class="ico">🤲</span>Streicheln</button>
+      <button class="action" data-act="water"><span class="ico">💧</span>Wasser</button>
+      <button class="action" data-act="play"><span class="ico">🎾</span>Spielen</button>
+      <button class="action" data-act="walk"><span class="ico">🚶</span>Gassi</button>
+      <button class="action" data-act="sleep"><span class="ico">🌙</span>Schlafen</button>
+      <button class="action" data-act="wash"><span class="ico">🫧</span>Waschen</button>
+      <button class="action" data-act="toilet"><span class="ico">🧻</span>Putzen</button>
+    </div>
+  </div>
+  <div id="pane-food" class="action-pane hidden"><div id="foodGrid" class="foodgrid"></div></div>
+  <div id="pane-games" class="action-pane hidden">
+    <div class="minigames">
+      <button class="gamebtn" data-game="reaction">Reaktion<br><small>Tippe im richtigen Moment.</small></button>
+      <button class="gamebtn" data-game="guess">Knochenraten<br><small>Finde den versteckten Knochen.</small></button>
+      <button class="gamebtn" data-game="memory">Pfoten-Memory<br><small>Merke dir die richtige Pfote.</small></button>
+    </div>
+  </div>
+  <div id="pane-inventory" class="action-pane hidden"><div id="inventoryGrid" class="inventory"></div></div>
+  <div id="pane-shop" class="action-pane hidden"><div id="shopGrid" class="shop"></div></div>
+  <div id="pane-outfits" class="action-pane hidden"><div id="outfitGrid" class="outfit-grid"></div></div>
+  <div id="pane-achievements" class="action-pane hidden"><div id="achievementGrid" class="achievements"></div></div>
+
+  <div class="vitals">
+    <div class="vital">⚖️ <span id="weight">6,0</span> kg</div>
+    <div class="vital">🪙 <span id="coins">25</span> Münzen</div>
+    <div class="vital">🏆 Level <span id="level">1</span></div>
+  </div>
+  <div id="personality" class="personality">Persönlichkeit: neugierig</div>
+  <div class="calendar-card">
+    <div class="calendar-item">🌦️ <span id="season">Frühling</span></div>
+    <div class="calendar-item">✨ Nächstes Event: Tag <span id="nextEvent">3</span></div>
+    <div class="calendar-item">💩 Toilette: <span id="toiletState">sauber</span></div>
+  </div>
+  <div id="eventBanner" class="event-banner"></div><div id="criticalBanner" class="critical-banner"></div>
+
+  <div class="foot"><span id="saveInfo">Automatisch gespeichert.</span><button class="smalltop" id="manualSave">Jetzt speichern</button></div>
+</section>
+</div>
+
+<div id="createModal" class="modal hidden">
+  <div class="modal-card">
+    <h2>Neuen Mops anlegen</h2>
+    <div class="muted">Der Name kann nach dem Erstellen nicht mehr geändert werden.</div>
+    <label for="newName">Name des Mopses</label><input id="newName" maxlength="16" placeholder="z. B. Bruno">
+    <label for="cycleSelect">Länge eines Spieltags</label>
+    <select id="cycleSelect">
+      <option value="5">5 Minuten</option><option value="10">10 Minuten</option><option value="15">15 Minuten</option><option value="30" selected>30 Minuten</option><option value="60">1 Stunde</option><option value="180">3 Stunden</option><option value="360">6 Stunden</option><option value="720">12 Stunden</option><option value="1440">24 Stunden</option>
+    </select>
+    <div class="modal-actions"><button class="secondary" id="cancelCreate">Abbrechen</button><button class="primary" id="confirmCreate">Erstellen</button></div>
+  </div>
+</div>
+
+<div id="settingsModal" class="modal hidden">
+  <div class="modal-card">
+    <h2>Einstellungen</h2>
+    <label for="settingsCycle">Länge eines Spieltags</label>
+    <select id="settingsCycle">
+      <option value="5">5 Minuten</option><option value="10">10 Minuten</option><option value="15">15 Minuten</option><option value="30">30 Minuten</option><option value="60">1 Stunde</option><option value="180">3 Stunden</option><option value="360">6 Stunden</option><option value="720">12 Stunden</option><option value="1440">24 Stunden</option>
+    </select>
+    <label for="difficulty">Bedürfnisse</label>
+    <select id="difficulty"><option value="relaxed">Entspannt</option><option value="normal">Normal</option><option value="active">Anspruchsvoll</option></select>
+    <div class="modal-actions" style="justify-content:space-between;flex-wrap:wrap">
+      <button class="secondary" id="resetGame" style="background:#f3d9d5;color:#7a2925">Spielstand löschen</button>
+      <div style="display:flex;gap:8px">
+        <button class="secondary" id="closeSettings">Schließen</button>
+        <button class="primary" id="saveSettings">Speichern</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="miniModal" class="modal hidden"><div class="modal-card" id="miniContent"></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+(function(){
+"use strict";
+const ROOT="puglife-v1";
+const SAVE_BUNDLE="puglife-save-bundle-v2";
+const SINGLE_SAVE_KEY="puglife-single-save-v1";
+const LEGACY_ROOTS=["puglife-v1","pack-life-v1","mopsagotchi-deluxe-v2","mopsagotchi-deluxe-v1"];
+let canStore=true,currentSlot=null,state=null,busy=false,toastTimer,messageTimer=null,tickTimer=null,lastTickAt=0,sayLater=false;
+let temporaryScene=null;
+let storageMode="localStorage";
+const $=id=>document.getElementById(id);
+const clamp=v=>{
+ const n=Number(v);
+ return Math.max(0,Math.min(100,Number.isFinite(n)?n:0))
+};
+function safeNumber(value,fallback){
+ const n=Number(value);
+ return Number.isFinite(n)?n:fallback
+}
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+function cloneData(value){return value==null?null:JSON.parse(JSON.stringify(value))}
+function slotKey(){return SINGLE_SAVE_KEY}
+function readJson(key){try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):null}catch(e){return null}}
+function writeJson(key,value){try{localStorage.setItem(key,JSON.stringify(value));return localStorage.getItem(key)!==null}catch(e){canStore=false;return false}}
+function removeKey(key){try{localStorage.removeItem(key);return true}catch(e){return false}}
+function testStorage(){const k="puglife-test";try{localStorage.setItem(k,"1");const ok=localStorage.getItem(k)==="1";localStorage.removeItem(k);canStore=ok;return ok}catch(e){canStore=false;return false}}
+function storageExplanation(){return canStore?"Browser-Speicher aktiv":"Browser blockiert Speicherung"}
+
+
+const foods={
+  kibble:{name:"Trockenfutter",icon:"🥣",hunger:22,health:1,weight:.08,cost:4},
+  chicken:{name:"Hühnchen",icon:"🍗",hunger:30,health:4,weight:.06,cost:7},
+  carrot:{name:"Karotte",icon:"🥕",hunger:12,health:5,weight:-.03,cost:3},
+  treat:{name:"Leckerli",icon:"🦴",hunger:9,health:-1,weight:.08,cost:2}
+};
+const outfits={
+  none:{name:"Ohne Kleidung",icon:""},
+  cap:{name:"Rote Kappe",icon:"🧢"},
+  crown:{name:"Krone",icon:"👑"},
+  bow:{name:"Fliege",icon:"🎀"},
+  glasses:{name:"Sonnenbrille",icon:"🕶️"}
+};
+const achievements={
+  firstWalk:{name:"Erster Ausflug",icon:"🚶",text:"Einmal Gassi gehen"},
+  gamer:{name:"Spielprofi",icon:"🎮",text:"Fünf Minispiele gewinnen"},
+  caretaker:{name:"Vorbildlich",icon:"❤️",text:"Alle Werte gleichzeitig über 80"},
+  eventStar:{name:"Event-Star",icon:"✨",text:"Drei besondere Events erleben"},
+  rich:{name:"Sparschwein",icon:"🪙",text:"100 Münzen besitzen"},
+  cleanHome:{name:"Sauberes Zuhause",icon:"🧻",text:"Fünf Häufchen entfernen"}
+};
+const shopItems={
+  kibble:{type:"food",name:"Trockenfutter",icon:"🥣",cost:4},
+  chicken:{type:"food",name:"Hühnchen",icon:"🍗",cost:7},
+  carrot:{type:"food",name:"Karotte",icon:"🥕",cost:3},
+  treat:{type:"food",name:"Leckerli",icon:"🦴",cost:2},
+  soap:{type:"item",name:"Hundeshampoo",icon:"🧴",cost:8},
+  medicine:{type:"item",name:"Medizin",icon:"💊",cost:15},
+  frisbee:{type:"item",name:"Frisbee",icon:"🥏",cost:18},
+  cap:{type:"outfit",name:"Rote Kappe",icon:"🧢",cost:25},
+  crown:{type:"outfit",name:"Krone",icon:"👑",cost:45},
+  bow:{type:"outfit",name:"Fliege",icon:"🎀",cost:20},
+  glasses:{type:"outfit",name:"Sonnenbrille",icon:"🕶️",cost:30}
+};
+
+function defaultState(name,cycle){
+ const now=Date.now();
+ return {
+   name:name,
+   cycle:Number(cycle)||30,
+   difficulty:"normal",
+   created:now,
+   last:now,
+   anchorReal:now,
+   anchorGameMinutes:480,
+   gameMinutes:480,
+   day:1,
+   hunger:82,
+   love:78,
+   fun:72,
+   energy:86,
+   clean:92,
+   health:100,
+   exercise:62,
+   xp:0,
+   level:1,
+   weight:5.8,
+   coins:25,
+   sound:false,
+   weather:"sunny",
+   room:"living",
+   poop:0,
+   lastPoopDay:1,
+   outfit:"none",
+   ownedOutfits:{none:true},
+   achievements:{},
+   events:{nextDay:3,lastDay:0,active:null,current:null,history:[]},
+   inventory:{
+     kibble:3,
+     chicken:1,
+     carrot:1,
+     treat:2,
+     soap:1,
+     medicine:0,
+     frisbee:0
+   },
+   stats:{
+     walks:0,
+     games:0,
+     meals:0,
+     poopsCleaned:0,
+     wins:0
+   }
+ }
+}
+
+function migrate(s){
+ if(!s||typeof s!=="object")return null;
+ if(!s.name)s.name="Mops"; if(!s.cycle)s.cycle=30; if(!s.difficulty)s.difficulty="normal";
+ if(!s.created)s.created=Date.now(); if(!s.last)s.last=Date.now(); if(typeof s.day!=="number")s.day=1;
+ if(typeof s.gameMinutes!=="number")s.gameMinutes=480; if(!s.anchorReal)s.anchorReal=s.last;
+ if(typeof s.anchorGameMinutes!=="number")s.anchorGameMinutes=(s.day-1)*1440+s.gameMinutes;
+ for(const k of ["hunger","love","fun","energy","clean","health","exercise"])if(typeof s[k]!=="number")s[k]=k==="health"?100:75;
+ if(typeof s.xp!=="number")s.xp=0;if(typeof s.level!=="number")s.level=1;if(typeof s.weight!=="number")s.weight=5.8;if(typeof s.coins!=="number")s.coins=25;
+ if(!s.weather)s.weather="sunny";if(!s.room)s.room="living";
+ if(typeof s.growthVersion!=="number")s.growthVersion=1;if(typeof s.poop!=="number")s.poop=0;if(!s.outfit)s.outfit="none";
+ if(!s.ownedOutfits)s.ownedOutfits={none:true};if(!s.achievements)s.achievements={};if(!s.events)s.events={nextDay:3,lastDay:0,active:null,current:null,history:[]};
+ if(!("current" in s.events))s.events.current=null;
+ if(!s.inventory)s.inventory={kibble:3,chicken:1,carrot:1,treat:2,soap:1,medicine:0,frisbee:0};
+ if(!s.stats)s.stats={walks:0,games:0,meals:0,poopsCleaned:0,wins:0};
+ return s
+}
+function importLegacySlot(slot){
+ const bundle=readJson(SAVE_BUNDLE); if(Array.isArray(bundle)&&bundle[slot])return migrate(bundle[slot]);
+ for(const root of LEGACY_ROOTS){const v=readJson(root+"-slot-"+slot);if(v)return migrate(v)}
+ return null
+}
+function getSlot(){
+ const value=readJson(slotKey());
+ return value?migrate(value):null
+}
+function getSlots(){return [getSlot(0)]}
+function loadSlot(slot){const s=getSlot(slot);if(!s)return null;applyOffline(s);return s}
+function saveSlot(){if(!state||currentSlot===null)return false;state.last=Date.now();return writeJson(slotKey(),state)}
+function deleteSlot(slot){return removeKey(slotKey())}
+function persistSaveCache(){return saveSlot()}
+function initSaveCache(){return getSlots()}
+function exportAllSaves(){const text=JSON.stringify({app:"PugLife",version:3,slots:getSlots()});try{navigator.clipboard.writeText(text).then(()=>toast("Backup-Code kopiert")).catch(()=>prompt("Backup-Code kopieren:",text))}catch(e){prompt("Backup-Code kopieren:",text)}}
+function importAllSaves(){const text=prompt("Backup-Code einfügen:");if(!text)return;try{const p=JSON.parse(text);if(!Array.isArray(p.slots))throw 0;p.slots.slice(0,3).forEach((slot,i)=>{if(slot)writeJson(slotKey(i),migrate(slot))});renderSaves();toast("Backup importiert")}catch(e){toast("Backup-Code ungültig")}}
+function applyOffline(s){
+ const now=Date.now();
+ if(!s.anchorReal)s.anchorReal=s.last||now;
+ if(typeof s.anchorGameMinutes!=="number")s.anchorGameMinutes=(s.day-1)*1440+(s.gameMinutes||480);
+ syncFromClock(s,now,true);
+ s.last=now
+}
+function speedFactor(s){return s.difficulty==="relaxed"?.65:s.difficulty==="active"?1.35:1}
+function totalGameMinutesAt(s,now){
+ const elapsedRealMinutes=Math.max(0,(now-s.anchorReal)/60000);
+ return s.anchorGameMinutes+elapsedRealMinutes*(1440/s.cycle)
+}
+function syncFromClock(s,now,offline){
+ const oldTotal=(s.day-1)*1440+(s.gameMinutes||0);
+ const newTotal=totalGameMinutesAt(s,now);
+ const deltaGame=Math.max(0,newTotal-oldTotal);
+ const elapsedRealMinutes=deltaGame/(1440/s.cycle);
+ s.day=Math.floor(newTotal/1440)+1;
+ s.gameMinutes=((newTotal%1440)+1440)%1440;
+ const f=speedFactor(s);
+ const dayFraction=deltaGame/1440;
+ const spa=s.events&&s.events.current&&s.events.current.day===s.day&&s.events.current.id==="spa";
+ s.hunger=clamp(s.hunger-58*dayFraction*f);
+ s.thirst=clamp(safeNumber(s.thirst,85)-72*dayFraction*f);
+ s.love=clamp(s.love-24*dayFraction*f);
+ s.fun=clamp(s.fun-38*dayFraction*f);
+ s.energy=clamp(s.energy-(spa?22:44)*dayFraction*f);
+ s.clean=clamp(s.clean-(spa?18:40)*dayFraction*f);
+ s.exercise=clamp(s.exercise-30*dayFraction*f);
+ const low=[s.hunger,s.thirst,s.love,s.fun,s.energy,s.clean,s.exercise].filter(v=>v<20).length;
+ if(s.poop>0){s.clean=clamp(s.clean-12*dayFraction*s.poop);if(s.poop>=2)s.health=clamp(s.health-7*dayFraction*s.poop)}
+ if(s.hunger<=0)s.health=clamp(s.health-22*dayFraction);
+ if(s.thirst<=0)s.health=clamp(s.health-34*dayFraction);
+ if(s.clean<=0)s.health=clamp(s.health-14*dayFraction);
+ if(low)s.health=clamp(s.health-12*dayFraction*low*f);
+ else s.health=clamp(s.health+2*dayFraction);
+ const oldDay=Math.floor(oldTotal/1440)+1;
+ if(s.day>oldDay){
+   for(let d=oldDay+1;d<=s.day;d++){
+     if(d%3===0)s.weather=Math.random()<.35?"rainy":"sunny";
+     if(Math.random()<.72)s.poop=Math.min(3,(s.poop||0)+1);
+     triggerScheduledEvent(s,d);
+   }
+ }
+ if(offline&&elapsedRealMinutes>.2)sayLater=true
+}
+function reanchorTime(s,now=Date.now()){
+ s.anchorGameMinutes=(s.day-1)*1440+s.gameMinutes;
+ s.anchorReal=now;
+ s.last=now
+}
+
+function ageProgress(){
+ const day=Math.max(1,Number(state&&state.day||1));
+ return Math.max(0,Math.min(1,(day-1)/29))
+}
+function growthScale(){
+ return .70+.30*ageProgress()
+}
+function puppyFactor(){
+ return 1-ageProgress()
+}
+function applyGrowth(){
+ if(!state)return;
+ const pug=$("pug");
+ const p=ageProgress();
+ const puppy=1-p;
+ const ageScale=growthScale();
+ const headScale=1.18-(.18*p);
+ const eyeScale=1.12-(.12*p);
+ const legScale=.78+(.22*p);
+ const bodyScale=.92+(.08*p);
+
+ pug.style.setProperty("--age-scale",ageScale.toFixed(4));
+ pug.style.setProperty("--head-scale",headScale.toFixed(4));
+ pug.style.setProperty("--eye-scale",eyeScale.toFixed(4));
+ pug.style.setProperty("--leg-scale",legScale.toFixed(4));
+ pug.style.setProperty("--body-scale",bodyScale.toFixed(4));
+ pug.classList.toggle("puppy-motion",p<.55);
+
+}
+
+function phase(){
+ if(state.day<11)return "Welpe";
+ if(state.day<31)return "Junghund";
+ if(state.day<60)return "Erwachsener";
+ return "Senior"
+}
+function clockText(){
+ const totalMinutes=Math.floor(state.gameMinutes)%1440;
+ const h=Math.floor(totalMinutes/60);
+ const min=totalMinutes%60;
+ return String(h).padStart(2,"0")+":"+String(min).padStart(2,"0")
+}
+function timeClass(){const h=(state.gameMinutes/60)%24;return h<6?"night":h<9?"dawn":h<18?"day":h<21?"evening":"night"}
+function say(t){
+ clearTimeout(messageTimer);
+ const bubble=$("bubble");
+ bubble.textContent=t;
+ bubble.classList.remove("is-hidden");
+ messageTimer=setTimeout(()=>bubble.classList.add("is-hidden"),5000)
+}
+function toast(t){clearTimeout(toastTimer);$("toast").textContent=t;$("toast").classList.add("show");toastTimer=setTimeout(()=>$("toast").classList.remove("show"),1700)}
+function renderSaves(){
+ const s=getSlot(0),box=$("saveList");
+ box.innerHTML="";
+ $("storageStatus").textContent=testStorage()?"Der Spielstand wird lokal in diesem Browser gespeichert.":"Dieser Browser blockiert lokales Speichern.";
+ const card=document.createElement("div");
+ card.className="save-card "+(s?"":"empty");
+ if(!s){
+   const create=document.createElement("button");
+   create.type="button";
+   create.className="slot-main";
+   create.innerHTML="<div style='font-size:34px'>＋</div><b>Neues Spiel beginnen</b>";
+   create.addEventListener("click",()=>openCreate(0));
+   card.appendChild(create)
+ }else{
+   const open=document.createElement("button");
+   open.type="button";
+   open.className="slot-main";
+   open.innerHTML="<div class='save-name'>"+escapeHtml(s.name)+"</div><div class='save-meta'><span>"+phaseOf(s)+" · Tag "+s.day+"</span><span>Level "+s.level+" · "+s.coins+" Münzen</span><span>Spieltag: "+cycleLabel(s.cycle)+"</span></div><div style='margin-top:10px;font-weight:900'>Spiel fortsetzen</div>";
+   open.addEventListener("click",()=>openGame(0));
+   card.appendChild(open)
+ }
+ box.appendChild(card)
+}
+function escapeHtml(t){return String(t).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function phaseOf(s){return s.day<4?"Welpe":s.day<10?"Junghund":s.day<25?"Erwachsener":"Senior"}
+function cycleLabel(v){return v<60?v+" Min.":v===60?"1 Std.":(v/60)+" Std."}
+function openCreate(slot){currentSlot=slot;$("newName").value="";$("createModal").classList.remove("hidden")}
+function openGame(slot){
+ try{
+   closeOverlay();
+   stopLoop();
+   const loaded=loadSlot(slot);
+   if(!loaded){toast("Speicherstand konnte nicht geladen werden");return}
+   currentSlot=slot;
+   state=loaded;
+   reanchorTime(state,Date.now());
+   saveSlot();
+   $("saveScreen").classList.add("hidden");
+   $("gameScreen").classList.remove("hidden");
+   say("Hallo! Ich bin "+state.name+".");
+   renderAll();
+   renderRoom();
+   showTab("care");
+   startLoop();
+   setTimeout(showActiveEvent,250)
+ }catch(e){
+   console.error("Fehler beim Laden von Slot",slot,e);
+   toast("Speicherstand konnte nicht geöffnet werden")
+ }
+}
+function showSaveScreen(){
+ closeOverlay();
+ stopLoop();
+ saveSlot();
+ document.querySelectorAll(".action-pane").forEach(pane=>pane.removeAttribute("style"));
+ state=null;
+ currentSlot=null;
+ $("gameScreen").classList.add("hidden");
+ $("saveScreen").classList.remove("hidden");
+ renderSaves()
+}
+
+const eventTypes=[
+ {id:"market",name:"Mops-Markt",icon:"🎪",text:"Heute ist Mops-Markt. Alle Münzbelohnungen werden verdoppelt.",effect:"Doppelte Münzen für den ganzen Tag.",apply:s=>{s.coins+=10}},
+ {id:"picnic",name:"Park-Picknick",icon:"🧺",text:"Im Park findet ein Picknick statt. Futter wirkt heute stärker.",effect:"Futter gibt zusätzlich Liebe und mehr Sättigung.",apply:s=>{s.hunger=clamp(s.hunger+18);s.love=clamp(s.love+10)}},
+ {id:"rainbow",name:"Regenbogen-Tag",icon:"🌈",text:"Ein Regenbogen erscheint. Spielen und Minispiele bringen heute mehr Erfahrung.",effect:"50 % mehr Erfahrung.",apply:s=>{s.weather="sunny";s.fun=clamp(s.fun+15)}},
+ {id:"treasure",name:"Schatzsuche",icon:"🗺️",text:"Heute lohnt sich jeder Spaziergang besonders.",effect:"Gassi gehen bringt 8 zusätzliche Münzen.",apply:s=>{s.coins+=12;s.exercise=clamp(s.exercise+8)}},
+ {id:"spa",name:"Mops-Wellness",icon:"🛁",text:"Heute ist Wellness-Tag. Schmutz und Energie sinken deutlich langsamer.",effect:"Sauberkeit und Energie verlieren nur halb so schnell.",apply:s=>{s.clean=100;s.health=clamp(s.health+10);s.energy=clamp(s.energy+15)}}
+];
+function currentEvent(){
+ return state&&state.events&&state.events.current&&state.events.current.day===state.day?state.events.current:null
+}
+function coinMultiplier(){
+ const ev=currentEvent();
+ return ev&&ev.id==="market"?2:1
+}
+function awardCoins(amount){
+ const gained=Math.max(0,Math.round(amount*coinMultiplier()));
+ state.coins+=gained;
+ return gained
+}
+function xpMultiplier(){
+ const ev=currentEvent();
+ return ev&&ev.id==="rainbow"?1.5:1
+}
+function triggerScheduledEvent(s,day){
+ if(!s.events)s.events={nextDay:3,lastDay:0,active:null,current:null,history:[]};
+ if(s.events.current&&s.events.current.day<day)s.events.current=null;
+ if(day<s.events.nextDay||s.events.lastDay===day)return;
+ const pool=eventTypes.filter(e=>!s.events.history.slice(-2).includes(e.id));
+ const ev=pool[Math.floor(Math.random()*pool.length)]||eventTypes[0];
+ ev.apply(s);
+ const payload={id:ev.id,name:ev.name,icon:ev.icon,text:ev.text,effect:ev.effect,day};
+ s.events.active=payload;
+ s.events.current=payload;
+ s.events.lastDay=day;
+ s.events.nextDay=day+rand(2,4);
+ s.events.history.push(ev.id);
+}
+function openOverlay(){
+ document.body.classList.add("overlay-open");
+ $("miniModal").classList.remove("hidden")
+}
+function closeOverlay(){
+ $("miniModal").classList.add("hidden");
+ document.body.classList.remove("overlay-open")
+}
+function showActiveEvent(){
+ if(!state.events||!state.events.active)return;
+ const ev=state.events.active;
+ $("miniContent").innerHTML="<h2>"+ev.icon+" "+ev.name+"</h2><p>"+ev.text+"</p><p><b>"+ev.effect+"</b></p><p class='muted'>Besonderes Ereignis an Tag "+ev.day+"</p><div class='modal-actions'><button id='eventClose' class='primary'>Weiter</button></div>";
+ openOverlay();
+ $("eventClose").onclick=()=>{state.events.active=null;saveSlot();closeOverlay()}
+}
+
+function seasonName(){const n=Math.floor((state.day-1)/7)%4;return ["Frühling","Sommer","Herbst","Winter"][n]}
+function personalityName(){
+ if(state.stats.walks>state.stats.games+3)return "abenteuerlustig";
+ if(state.stats.games>state.stats.walks+3)return "verspielt";
+ if(state.love>88)return "verschmust";
+ if(state.health<45)return "sensibel";
+ if(state.exercise>85)return "energiegeladen";
+ return "neugierig"
+}
+function updateAchievements(){
+ if(state.stats.walks>=1)state.achievements.firstWalk=true;
+ if(state.stats.wins>=5)state.achievements.gamer=true;
+ if([state.hunger,state.love,state.fun,state.energy,state.clean,state.health,state.exercise].every(v=>v>=80))state.achievements.caretaker=true;
+ if(state.coins>=100)state.achievements.rich=true;
+ if((state.events.history||[]).length>=3)state.achievements.eventStar=true;
+ if(state.stats.poopsCleaned>=5)state.achievements.cleanHome=true;
+}
+
+function roomSvg(room){
+
+ if(room==="walk")return `
+ <svg viewBox="0 0 800 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+   <defs>
+     <linearGradient id="forestSky" x1="0" y1="0" x2="0" y2="1">
+       <stop offset="0" stop-color="#9bc6cf"/>
+       <stop offset="1" stop-color="#dbe8df"/>
+     </linearGradient>
+     <linearGradient id="forestGround" x1="0" y1="0" x2="0" y2="1">
+       <stop offset="0" stop-color="#718b58"/>
+       <stop offset="1" stop-color="#496846"/>
+     </linearGradient>
+     <linearGradient id="forestPath" x1="0" y1="0" x2="0" y2="1">
+       <stop offset="0" stop-color="#c8b18c"/>
+       <stop offset="1" stop-color="#9f8767"/>
+     </linearGradient>
+   </defs>
+
+   <rect width="800" height="250" fill="url(#forestSky)"/>
+   <rect y="250" width="800" height="210" fill="url(#forestGround)"/>
+
+   <g opacity=".34" fill="#5d7f61">
+     <circle cx="85" cy="150" r="82"/>
+     <circle cx="185" cy="128" r="96"/>
+     <circle cx="320" cy="145" r="92"/>
+     <circle cx="475" cy="126" r="104"/>
+     <circle cx="630" cy="145" r="94"/>
+     <circle cx="745" cy="126" r="88"/>
+   </g>
+
+   <path d="M350 460 C355 382 375 326 420 275 C457 326 485 388 498 460Z" fill="url(#forestPath)"/>
+
+   <g>
+     <rect x="35" y="85" width="48" height="260" rx="18" fill="#5f4435"/>
+     <circle cx="58" cy="82" r="92" fill="#3f7048"/>
+     <circle cx="13" cy="110" r="62" fill="#4d8053"/>
+     <circle cx="105" cy="110" r="66" fill="#4a7a50"/>
+
+     <rect x="690" y="70" width="52" height="275" rx="18" fill="#5a4032"/>
+     <circle cx="717" cy="70" r="98" fill="#3f7048"/>
+     <circle cx="665" cy="108" r="66" fill="#4e8054"/>
+     <circle cx="765" cy="105" r="68" fill="#49784f"/>
+   </g>
+
+   <g>
+     <rect x="170" y="145" width="34" height="180" rx="14" fill="#6a4b39"/>
+     <circle cx="188" cy="128" r="68" fill="#4c7c50"/>
+     <circle cx="149" cy="148" r="44" fill="#5a8a59"/>
+     <circle cx="225" cy="148" r="45" fill="#578656"/>
+
+     <rect x="565" y="136" width="36" height="192" rx="14" fill="#654735"/>
+     <circle cx="583" cy="118" r="72" fill="#47784c"/>
+     <circle cx="542" cy="145" r="46" fill="#568758"/>
+     <circle cx="624" cy="145" r="46" fill="#538355"/>
+   </g>
+
+   <g fill="#355b3f" opacity=".9">
+     <ellipse cx="120" cy="352" rx="80" ry="28"/>
+     <ellipse cx="680" cy="362" rx="84" ry="30"/>
+     <ellipse cx="250" cy="390" rx="66" ry="22"/>
+     <ellipse cx="560" cy="396" rx="72" ry="24"/>
+   </g>
+
+   <g fill="#d8cab0">
+     <ellipse cx="315" cy="375" rx="18" ry="8"/>
+     <ellipse cx="505" cy="410" rx="16" ry="7"/>
+     <ellipse cx="420" cy="335" rx="13" ry="6"/>
+   </g>
+
+   <g fill="#d8e7cf" opacity=".65">
+     <circle cx="255" cy="90" r="10"/>
+     <circle cx="525" cy="75" r="9"/>
+     <circle cx="610" cy="104" r="8"/>
+   </g>
+ </svg>`;
+
+ if(room==="garden")return `
+ <svg viewBox="0 0 800 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+   <defs>
+     <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9bd8ee"/><stop offset="1" stop-color="#d9eef7"/></linearGradient>
+     <linearGradient id="grassG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8dc778"/><stop offset="1" stop-color="#6ba65e"/></linearGradient>
+   </defs>
+   <rect width="800" height="285" fill="url(#skyG)"/>
+   <rect y="285" width="800" height="175" fill="url(#grassG)"/>
+   <ellipse cx="660" cy="76" rx="48" ry="48" fill="#ffe59a" opacity=".95"/>
+   <g opacity=".9">
+     <ellipse cx="120" cy="88" rx="52" ry="20" fill="#fff"/>
+     <ellipse cx="165" cy="86" rx="36" ry="18" fill="#fff"/>
+     <ellipse cx="145" cy="70" rx="32" ry="24" fill="#fff"/>
+   </g>
+   <g>
+     <rect x="100" y="190" width="34" height="128" rx="12" fill="#825a3d"/>
+     <circle cx="118" cy="165" r="74" fill="#5f9f55"/>
+     <circle cx="74" cy="180" r="46" fill="#6eae63"/>
+     <circle cx="162" cy="176" r="50" fill="#69a95e"/>
+     <circle cx="115" cy="122" r="44" fill="#78b86c"/>
+   </g>
+   <path d="M520 460 C555 375 635 345 800 350 L800 460Z" fill="#d8c39a"/>
+   <path d="M0 378 C115 350 220 355 330 382" fill="none" stroke="#b9d49d" stroke-width="10" opacity=".7"/>
+   <g fill="#f4d06f"><circle cx="260" cy="340" r="7"/><circle cx="287" cy="362" r="6"/><circle cx="340" cy="330" r="7"/></g>
+   <g fill="#ef8da1"><circle cx="275" cy="355" r="6"/><circle cx="325" cy="370" r="6"/></g>
+   <rect x="590" y="250" width="130" height="12" rx="6" fill="#9a6b48"/>
+   <rect x="606" y="262" width="10" height="44" fill="#80583e"/>
+   <rect x="695" y="262" width="10" height="44" fill="#80583e"/>
+ </svg>`;
+ if(room==="bedroom")return `
+ <svg viewBox="0 0 800 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+   <rect width="800" height="310" fill="#aeb7d6"/>
+   <rect y="310" width="800" height="150" fill="#c9b49a"/>
+   <rect x="0" y="300" width="800" height="14" fill="#9b806a"/>
+   <rect x="510" y="190" width="220" height="120" rx="18" fill="#8a6b5b"/>
+   <rect x="530" y="170" width="175" height="95" rx="20" fill="#f3e5cf"/>
+   <rect x="540" y="240" width="170" height="70" rx="18" fill="#cf8fa1"/>
+   <rect x="566" y="185" width="72" height="28" rx="12" fill="#fff7ea"/>
+   <rect x="90" y="70" width="190" height="150" rx="14" fill="#f5eadb" stroke="#8f7466" stroke-width="10"/>
+   <rect x="112" y="92" width="146" height="106" fill="#7289b1"/>
+   <circle cx="215" cy="125" r="23" fill="#fff3c0"/>
+   <rect x="340" y="190" width="85" height="120" rx="12" fill="#987661"/>
+   <rect x="350" y="205" width="65" height="20" rx="6" fill="#d9c7b2"/>
+   <circle cx="405" cy="260" r="6" fill="#e7c26a"/>
+   <ellipse cx="250" cy="390" rx="180" ry="42" fill="#a68272" opacity=".55"/>
+ </svg>`;
+ if(room==="bathroom")return `
+ <svg viewBox="0 0 800 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+   <defs><pattern id="tile" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="#d8eef0"/><path d="M80 0H0V80" fill="none" stroke="#b6d5d8" stroke-width="3"/></pattern></defs>
+   <rect width="800" height="315" fill="url(#tile)"/>
+   <rect y="315" width="800" height="145" fill="#bfd8d8"/>
+   <rect x="510" y="200" width="225" height="115" rx="42" fill="#f8fbfb" stroke="#9ebfc2" stroke-width="8"/>
+   <rect x="535" y="165" width="20" height="52" rx="10" fill="#8faeb2"/>
+   <rect x="553" y="163" width="42" height="12" rx="6" fill="#8faeb2"/>
+   <rect x="110" y="120" width="180" height="120" rx="12" fill="#dff4f6" stroke="#88adb1" stroke-width="10"/>
+   <rect x="145" y="255" width="115" height="22" rx="8" fill="#9cb9bb"/>
+   <rect x="160" y="277" width="12" height="52" fill="#8da8aa"/><rect x="235" y="277" width="12" height="52" fill="#8da8aa"/>
+   <rect x="330" y="155" width="75" height="160" rx="12" fill="#f7faf8" stroke="#a9c3c4" stroke-width="8"/>
+   <circle cx="367" cy="282" r="5" fill="#95aaab"/>
+   <ellipse cx="300" cy="400" rx="170" ry="34" fill="#9ec8c9" opacity=".55"/>
+ </svg>`;
+ return `
+ <svg viewBox="0 0 800 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+   <rect width="800" height="310" fill="#e6d2b8"/>
+   <rect y="310" width="800" height="150" fill="#c8a77f"/>
+   <rect x="0" y="300" width="800" height="14" fill="#a98464"/>
+   <rect x="500" y="205" width="210" height="105" rx="24" fill="#a97868"/>
+   <rect x="520" y="175" width="170" height="70" rx="22" fill="#bd8a79"/>
+   <rect x="545" y="190" width="55" height="42" rx="15" fill="#e9d7c8"/>
+   <rect x="610" y="190" width="55" height="42" rx="15" fill="#e9d7c8"/>
+   <rect x="120" y="86" width="170" height="132" rx="14" fill="#f7ecdc" stroke="#9a7966" stroke-width="10"/>
+   <rect x="143" y="109" width="124" height="86" fill="#96c7da"/>
+   <rect x="345" y="165" width="94" height="145" rx="10" fill="#8a6b58"/>
+   <rect x="355" y="178" width="74" height="22" rx="5" fill="#d3bda8"/>
+   <rect x="355" y="210" width="74" height="22" rx="5" fill="#d3bda8"/>
+   <rect x="355" y="242" width="74" height="22" rx="5" fill="#d3bda8"/>
+   <ellipse cx="310" cy="395" rx="190" ry="44" fill="#c77f67" opacity=".5"/>
+   <rect x="60" y="200" width="26" height="110" rx="12" fill="#826145"/>
+   <circle cx="73" cy="170" r="50" fill="#6da467"/>
+ </svg>`;
+}
+
+function renderRoom(){
+ const activeRoom=temporaryScene||state.room;
+ const screen=$("screen");
+ screen.className="screen "+timeClass()+" "+activeRoom;
+ document.querySelectorAll(".roombtn").forEach(b=>b.classList.toggle("active",!temporaryScene&&b.dataset.room===state.room));
+ $("roomDeco").innerHTML=roomSvg(activeRoom);
+ const pugEl=$("pug");
+ pugEl.classList.remove("wearing-cap","wearing-crown","wearing-bow","wearing-glasses");
+ if(state.outfit&&state.outfit!=="none")pugEl.classList.add("wearing-"+state.outfit);
+ $("poop").classList.toggle("hidden",!state.poop);
+}
+function renderOutfits(){
+ const box=$("outfitGrid");box.innerHTML="";
+ Object.entries(outfits).forEach(([id,o])=>{if(!state.ownedOutfits[id])return;const b=document.createElement("button");b.className="outfit"+(state.outfit===id?" active":"");b.innerHTML="<div style='font-size:32px'>"+(o.icon||"🐶")+"</div>"+o.name;b.onclick=()=>{state.outfit=id;saveSlot();renderAll();toast(o.name+" ausgewählt")};box.appendChild(b)})
+}
+function renderAchievements(){
+ const box=$("achievementGrid");box.innerHTML="";
+ Object.entries(achievements).forEach(([id,a])=>{const on=!!state.achievements[id],d=document.createElement("div");d.className="achievement"+(on?" unlocked":"");d.innerHTML="<b>"+a.icon+" "+a.name+"</b><small>"+a.text+"</small>";box.appendChild(d)})
+}
+function renderAll(){
+ if(!state)return;
+ updateAchievements();
+ ["hunger","thirst","love","fun","energy","clean","health","exercise"].forEach(k=>{
+ const v=clamp(state[k]);
+ $(k).style.width=v.toFixed(2)+"%";
+ $(k).classList.toggle("low",v<30);
+ $(k+"N").textContent=Math.round(v)
+});
+ const xpPct=state.xp%100;$("xp").style.width=xpPct+"%";$("xpN").textContent=xpPct;
+ $("petName").textContent=state.name;$("day").textContent=state.day;$("phase").textContent=phase();$("clock").textContent=clockText();
+ applyGrowth();
+ const weekdays=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
+ $("weekday").textContent=weekdays[(state.day-1)%7];
+ const progress=Math.floor((state.gameMinutes/1440)*100);
+ $("dayRing").style.setProperty("--p",progress);
+ $("dayPercent").textContent=progress+"%";$("weight").textContent=state.weight.toFixed(1).replace(".",",");$("coins").textContent=state.coins;$("level").textContent=state.level;
+ renderRoom();
+ const ev=currentEvent();
+ const screenEl=$("screen");
+ screenEl.classList.remove("event-market","event-picnic","event-rainbow","event-treasure","event-spa");
+ if(ev)screenEl.classList.add("event-"+ev.id);
+ $("eventBanner").classList.toggle("show",!!ev);
+ $("eventBanner").textContent=ev?(ev.icon+" "+ev.name+" – "+ev.effect):"";
+ $("pug").classList.toggle("dirty",state.clean<30);
+ $("pug").classList.toggle("sick",state.health<35);
+ $("pug").classList.toggle("critical",state.health<=0);
+ $("criticalBanner").classList.toggle("show",state.health<=0);
+ $("criticalBanner").textContent=state.health<=0?(state.name+" ist in einem kritischen Zustand. Medizin, Wasser, Futter und Ruhe helfen bei der Erholung."):"";$("pug").classList.toggle("happy",Math.min(state.hunger,state.thirst,state.love,state.fun,state.energy,state.clean,state.health)>=25);
+$("saveInfo").textContent=canStore?("Automatisch gespeichert ("+"Browser"+")"):"Speichern ist in dieser Vorschau blockiert.";
+ $("season").textContent=seasonName();$("nextEvent").textContent=state.events.nextDay;
+ $("toiletState").textContent=state.poop?state.poop+" Häufchen":"sauber";
+ $("personality").textContent="Persönlichkeit: "+personalityName();
+ renderWeather();renderFood();renderInventory();renderShop();renderOutfits();renderAchievements();
+ applyActionLock();
+ const low=lowestNeed();if(low&&low.val<22)say(low.msg)
+}
+function renderWeather(){
+ const rain=$("rain");rain.innerHTML="";
+ if(state.weather==="rainy"){for(let i=0;i<18;i++){const d=document.createElement("i");d.style.left=rand(0,100)+"%";d.style.animationDelay=(Math.random())+"s";rain.appendChild(d)}}}
+function lowestNeed(){
+ const a=[{val:state.hunger,msg:state.name+" hat Hunger."},{val:state.thirst,msg:state.name+" hat Durst."},{val:state.love,msg:state.name+" möchte Nähe."},{val:state.fun,msg:state.name+" langweilt sich."},{val:state.energy,msg:state.name+" ist müde."},{val:state.clean,msg:state.name+" braucht ein Bad."},{val:state.exercise,msg:state.name+" möchte Gassi gehen."},{val:state.health,msg:state.name+" fühlt sich nicht gut."}];
+ return a.sort((x,y)=>x.val-y.val)[0]
+}
+function renderFood(){
+ const box=$("foodGrid");box.innerHTML="";
+ Object.entries(foods).forEach(([id,f])=>{const n=state.inventory[id]||0,b=document.createElement("button");b.className="item";b.disabled=n<1;b.innerHTML="<span class='count'>"+n+"</span><b>"+f.icon+" "+f.name+"</b><small>Sättigung +"+f.hunger+"</small>";b.onclick=()=>feed(id);box.appendChild(b)})
+}
+function renderInventory(){
+ const box=$("inventoryGrid");box.innerHTML="";
+ Object.entries(state.inventory).forEach(([id,n])=>{if(!n)return;const x=shopItems[id];if(!x||x.type==="outfit")return;const b=document.createElement("button");b.className="item";b.innerHTML="<span class='count'>"+n+"</span><b>"+x.icon+" "+x.name+"</b><small>"+(x.type==="food"?"Unter Futter verwenden":"Antippen zum Benutzen")+"</small>";b.onclick=()=>useItem(id);box.appendChild(b)});
+ if(!box.children.length)box.innerHTML="<div class='muted'>Das Inventar ist leer.</div>"
+}
+function renderShop(){
+ const box=$("shopGrid");box.innerHTML="";
+ Object.entries(shopItems).forEach(([id,x])=>{const b=document.createElement("button");b.className="item";b.disabled=state.coins<x.cost;b.innerHTML="<b>"+x.icon+" "+x.name+"</b><small>"+x.cost+" Münzen</small>";b.onclick=()=>buy(id);box.appendChild(b)})
+}
+let actionLockUntil=0;
+function actionsLocked(){
+ return Date.now()<actionLockUntil
+}
+function applyActionLock(){
+ const locked=actionsLocked();
+ document.querySelectorAll(".action,.item,.gamebtn,.tab").forEach(button=>{
+   button.disabled=locked
+ })
+}
+function lockActions(duration){
+ actionLockUntil=Math.max(actionLockUntil,Date.now()+duration);
+ applyActionLock();
+ setTimeout(()=>{
+   if(!actionsLocked())applyActionLock()
+ },duration+30)
+}
+function lock(){applyActionLock()}
+function anim(c,ms){$("pug").classList.remove("idle");$("pug").classList.add(c);setTimeout(()=>{$("pug").classList.remove(c,"playing","sleeping","walk","play-seq","sleep-seq","feed-seq","wash-seq","pet-seq");$("pug").classList.add("idle")},ms)}
+function hearts(symbols=["❤️","💗","❤️","💗","❤️"]){$("hearts").innerHTML="";const p=[[-90,-105,-18],[0,-145,8],[90,-100,22],[-50,-160,-8],[55,-165,15]];p.forEach((q,i)=>{const e=document.createElement("span");e.className="heart";e.textContent=symbols[i%symbols.length];e.style.setProperty("--x",q[0]+"px");e.style.setProperty("--y",q[1]+"px");e.style.setProperty("--r",q[2]+"deg");e.style.animationDelay=i*45+"ms";$("hearts").appendChild(e)})}
+function tone(){return}
+function notes(){return}
+function addXp(n){state.xp+=Math.round(n*xpMultiplier());while(state.xp>=state.level*100){state.xp-=state.level*100;state.level++;const bonus=awardCoins(10);toast("Level "+state.level+" erreicht! +"+bonus+" Münzen")}}
+function feed(id){
+ if(actionsLocked())return;
+ if(!state.inventory[id])return;
+ lockActions(2100);
+ syncFromClock(state,Date.now(),false);reanchorTime(state);const f=foods[id];state.inventory[id]--;
+ const picnic=currentEvent()&&currentEvent().id==="picnic";
+ state.hunger=clamp(state.hunger+f.hunger+(picnic?8:0));
+ state.love=clamp(state.love+(picnic?5:0));
+ state.health=clamp(state.health+f.health+(state.health<=0?8:0));state.weight=Math.max(3.5,Math.min(14,state.weight+f.weight));state.clean=clamp(state.clean-3);state.stats.meals++;addXp(4);$("bowl").classList.add("show");anim("feed-seq",2000);say(state.name+" frisst "+f.name+".");notes([280,330,390]);saveSlot();renderAll();setTimeout(()=>{
+ $("bowl").classList.remove("show");
+ 
+ renderAll();
+ const active=document.querySelector(".tab.active");
+ showTab(active?active.dataset.tab:"food")
+},2100)
+}
+function act(a){
+ if(actionsLocked())return;
+ syncFromClock(state,Date.now(),false);
+ reanchorTime(state);
+ $("pug").classList.remove("idle");
+ const durations={pet:1800,water:1900,play:2500,walk:2200,sleep:2900,wash:2200,toilet:1600};
+ lockActions(durations[a]||1800);
+ if(a==="pet"){state.love=clamp(state.love+22);hearts();anim("pet-seq",1800);say(state.name+" genießt das Streicheln.");addXp(3);notes([520,660])}
+ if(a==="water"){
+   state.thirst=clamp(safeNumber(state.thirst,85)+42);
+   state.health=clamp(state.health+(state.health<=0?14:3));
+   $("waterBowl").classList.add("show");
+   anim("drink-seq",1800);
+   say(state.name+" trinkt frisches Wasser.");
+   setTimeout(()=>$("waterBowl").classList.remove("show"),1800)
+ }
+ if(a==="play"){if(state.health<=0){say(state.name+" ist zu schwach zum Spielen.");toast("Erst Gesundheit verbessern");renderAll();return}if(state.energy<14){say("Zu müde zum Spielen.");toast("Erst schlafen lassen");renderAll();return}state.fun=clamp(state.fun+25);state.love=clamp(state.love+5);state.energy=clamp(state.energy-12);state.hunger=clamp(state.hunger-5);$("ball").classList.add("show");$("pug").classList.add("playing");anim("play-seq",2400);say(state.name+" jagt dem Ball hinterher!");addXp(7);notes([440,660,880]);setTimeout(()=>$("ball").classList.remove("show"),2000)}
+ if(a==="walk"){
+   if(state.health<=0){say(state.name+" ist zu schwach für einen Spaziergang.");toast("Erst Gesundheit verbessern");renderAll();return}
+   if(state.energy<18){say("Zu müde für einen Spaziergang.");toast("Zu wenig Energie");renderAll();return}
+   temporaryScene="walk";
+   renderRoom();
+   state.exercise=clamp(state.exercise+30);state.fun=clamp(state.fun+12);state.energy=clamp(state.energy-16);state.hunger=clamp(state.hunger-8);state.clean=clamp(state.clean-(state.weather==="rainy"?13:6));state.weight=Math.max(3.5,state.weight-.05);const walkBase=rand(1,4)+(currentEvent()&&currentEvent().id==="treasure"?8:0);
+ const walkCoins=awardCoins(walkBase);
+ state.stats.walks++;anim("walk",1800);
+   say(state.name+" geht draußen spazieren und findet "+walkCoins+" Münzen.");
+   addXp(10);
+   notes([390,490,590]);
+   setTimeout(()=>{
+     temporaryScene=null;
+     renderRoom()
+   },2100)
+ }
+ if(a==="sleep"){state.energy=clamp(state.energy+38);state.health=clamp(state.health+(state.health<=0?10:3));state.hunger=clamp(state.hunger-8);$("zzz").classList.add("show");$("pug").classList.add("sleeping");anim("sleep-seq",2800);say(state.name+" schläft tief und fest.");notes([330,260,210]);setTimeout(()=>$("zzz").classList.remove("show"),2400)}
+ if(a==="wash"){state.clean=clamp(state.clean+40);state.love=clamp(state.love-2);hearts(["🫧","○","🫧","○"]);anim("wash-seq",2000);say(state.name+" ist wieder blitzsauber.");addXp(4);notes([610,730,620])}
+ if(a==="toilet"){
+   if(!state.poop){say("Hier ist alles sauber.");toast("Kein Häufchen da");renderAll();return}
+   state.stats.poopsCleaned+=state.poop;state.poop=0;state.clean=clamp(state.clean+8);state.health=clamp(state.health+3);awardCoins(2);
+   hearts(["✨","🫧","✨"]);anim("shake",1200);say("Das Zuhause ist wieder sauber.");addXp(5)
+ }
+ reanchorTime(state);saveSlot();renderAll();setTimeout(()=>{
+ 
+ renderAll();
+ const active=document.querySelector(".tab.active");
+ showTab(active?active.dataset.tab:"care")
+},a==="sleep"?2900:(a==="play"?2500:2200))
+}
+function useItem(id){
+ if(actionsLocked())return;
+ if(!state.inventory[id])return;
+ if(foods[id]){document.querySelector('[data-tab="food"]').click();return}
+ if(id==="soap"){state.inventory.soap--;state.clean=100;say("Das Shampoo wirkt besonders gut!");hearts(["🫧","○","🫧"]);addXp(3)}
+ if(id==="medicine"){if(state.health>80){toast("Medizin wird gerade nicht benötigt");return}state.inventory.medicine--;state.health=clamp(state.health+(state.health<=0?55:35));say(state.name+" fühlt sich schon besser.");addXp(6)}
+ if(id==="frisbee"){state.fun=clamp(state.fun+35);state.energy=clamp(state.energy-10);say(state.name+" liebt den Frisbee!");anim("jump",1800);addXp(8)}
+ saveSlot();renderAll()
+}
+function buy(id){
+ if(actionsLocked())return;
+ const x=shopItems[id];
+ if(state.coins<x.cost){
+   const missing=x.cost-state.coins;
+   toast("Nicht genug Münzen");
+   say("Für "+x.name+" fehlen dir "+missing+" Münzen.");
+   return
+ }
+ if(x.type==="outfit"&&state.ownedOutfits[id]){toast("Bereits im Kleiderschrank");return}
+ state.coins-=x.cost;
+ if(x.type==="outfit")state.ownedOutfits[id]=true;
+ else state.inventory[id]=(state.inventory[id]||0)+1;
+ saveSlot();
+ renderAll();
+ toast(x.name+" gekauft")
+}
+
+function memoryArt(id){
+ if(id==="ball")return `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="#e7b84f" stroke="#9e6d29" stroke-width="6"/><path d="M18 43 Q50 62 82 43" fill="none" stroke="#fff2b8" stroke-width="8"/><path d="M50 12 Q38 50 50 88" fill="none" stroke="#c47735" stroke-width="7"/></svg>`;
+ if(id==="bone")return `<svg viewBox="0 0 100 100"><path d="M27 29 C16 17 4 30 14 40 L23 49 L14 58 C4 68 16 81 27 70 L37 60 L63 60 L73 70 C84 81 96 68 86 58 L77 49 L86 40 C96 30 84 17 73 29 L63 39 L37 39Z" fill="#f4e2bc" stroke="#9d7c59" stroke-width="5"/></svg>`;
+ if(id==="bowl")return `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="33" rx="35" ry="13" fill="#8cc5d8"/><path d="M15 33 H85 L76 70 Q50 84 24 70Z" fill="#5fa5bc" stroke="#356f82" stroke-width="5"/><circle cx="38" cy="37" r="5" fill="#6d4a2f"/><circle cx="52" cy="35" r="5" fill="#6d4a2f"/><circle cx="64" cy="39" r="5" fill="#6d4a2f"/></svg>`;
+ return `<svg viewBox="0 0 100 100"><path d="M50 84 C43 60 28 52 29 36 C30 20 43 12 50 31 C57 12 70 20 71 36 C72 52 57 60 50 84Z" fill="#79b56d" stroke="#477c43" stroke-width="5"/><circle cx="50" cy="36" r="13" fill="#f1c65d"/><circle cx="50" cy="36" r="6" fill="#8b6035"/><circle cx="50" cy="17" r="10" fill="#e98595"/><circle cx="68" cy="27" r="10" fill="#e98595"/><circle cx="68" cy="46" r="10" fill="#e98595"/><circle cx="32" cy="27" r="10" fill="#e98595"/><circle cx="32" cy="46" r="10" fill="#e98595"/></svg>`
+}
+function startMemoryGame(){
+ const ids=["ball","bone","bowl","flower"];
+ const deck=[...ids,...ids].sort(()=>Math.random()-.5);
+ let first=null,second=null,lock=false,matches=0;
+ $("miniContent").innerHTML="<h2>Pfoten-Memory</h2><p>Merke dir die acht Karten. Finde alle vier Paare.</p><div id='memoryGrid' class='memory-grid'></div><div id='memoryStatus' class='muted'>Die Karten werden gleich umgedreht.</div><div class='modal-actions'><button id='miniClose' class='secondary'>Beenden</button></div>";
+ openOverlay();
+ const grid=$("memoryGrid");
+ deck.forEach((id,i)=>{
+   const b=document.createElement("button");
+   b.className="memory-card revealed";
+   b.dataset.id=id;b.dataset.index=i;
+   b.innerHTML="<span class='memory-inner'><span class='memory-face memory-back'></span><span class='memory-face memory-front'>"+memoryArt(id)+"</span></span>";
+   grid.appendChild(b)
+ });
+ const cards=[...grid.querySelectorAll(".memory-card")];
+ setTimeout(()=>{
+   cards.forEach(c=>c.classList.remove("revealed"));
+   $("memoryStatus").textContent="Wähle zwei Karten aus."
+ },1600);
+ cards.forEach(card=>card.onclick=()=>{
+   if(lock||card.classList.contains("revealed")||card.classList.contains("matched"))return;
+   card.classList.add("revealed");
+   if(!first){first=card;return}
+   second=card;lock=true;
+   if(first.dataset.id===second.dataset.id){
+     first.classList.add("matched");second.classList.add("matched");
+     first.classList.remove("revealed");second.classList.remove("revealed");
+     matches++;awardCoins(3);state.fun=clamp(state.fun+4);state.stats.wins++;addXp(3);
+     $("memoryStatus").textContent="Treffer! +3 Münzen";
+     first=second=null;lock=false;saveSlot();renderAll();
+     if(matches===4){
+       awardCoins(10);state.fun=clamp(state.fun+12);addXp(8);saveSlot();renderAll();
+       $("memoryStatus").textContent="Alle Paare gefunden! Bonus: +10 Münzen";
+       setTimeout(()=>closeOverlay(),1400)
+     }
+   }else{
+     $("memoryStatus").textContent="Kein Paar.";
+     setTimeout(()=>{
+       first.classList.remove("revealed");second.classList.remove("revealed");
+       first=second=null;lock=false;$("memoryStatus").textContent="Wähle zwei Karten aus."
+     },850)
+   }
+ });
+ $("miniClose").onclick=()=>closeOverlay()
+}
+
+function startMini(type){
+ if(actionsLocked())return;
+ if(type==="reaction"){
+  $("miniContent").innerHTML="<h2>Reaktion</h2><p>Warte auf „JETZT!“ und tippe dann so schnell wie möglich.</p><button id='reactBtn' class='primary' style='width:100%;height:90px'>Bereit</button><div class='modal-actions'><button id='miniClose' class='secondary'>Abbrechen</button></div>";
+  openOverlay();let ready=false,start=0,t=setTimeout(()=>{ready=true;start=performance.now();$("reactBtn").textContent="JETZT!";$("reactBtn").style.background="#4f9d69"},rand(1200,3000));
+  $("reactBtn").onclick=()=>{if(!ready){clearTimeout(t);$("reactBtn").textContent="Zu früh!";setTimeout(()=>closeOverlay(),900)}else{const ms=Math.round(performance.now()-start),reward=ms<350?8:ms<600?5:3;awardCoins(reward);state.fun=clamp(state.fun+14);state.stats.games++;state.stats.wins++;addXp(8);saveSlot();renderAll();$("reactBtn").textContent=ms+" ms · +"+reward+" Münzen";setTimeout(()=>closeOverlay(),1300)}};
+  $("miniClose").onclick=()=>{clearTimeout(t);closeOverlay()}
+ }else if(type==="guess"){
+  const bone=rand(0,2);$("miniContent").innerHTML="<h2>Knochenraten</h2><p>Unter welchem Becher liegt der Knochen?</p><div class='form-row' style='grid-template-columns:repeat(3,1fr)'>"+[0,1,2].map(i=>"<button class='primary cup' data-i='"+i+"' style='height:90px;font-size:34px'>🥤</button>").join("")+"</div><div class='modal-actions'><button id='miniClose' class='secondary'>Abbrechen</button></div>";
+  openOverlay();document.querySelectorAll(".cup").forEach(b=>b.onclick=()=>{const ok=+b.dataset.i===bone,reward=ok?6:1;b.textContent=ok?"🦴":"❌";awardCoins(reward);state.fun=clamp(state.fun+12);state.stats.games++;if(ok)state.stats.wins++;addXp(7);saveSlot();renderAll();toast(ok?"Gefunden! +6 Münzen":"Daneben! +1 Münze");setTimeout(()=>closeOverlay(),1000)});$("miniClose").onclick=()=>closeOverlay()
+ }else{
+   startMemoryGame()
+ }
+}
+let liveLoopToken=0;
+function advanceFiveSecondStep(){
+ if(!state)return;
+ const realSeconds=5;
+ const daySeconds=Math.max(60,Number(state.cycle||30)*60);
+ const gameMinutesAdded=(realSeconds/daySeconds)*1440;
+ const beforeDay=state.day;
+
+ state.gameMinutes=Number(state.gameMinutes||0)+gameMinutesAdded;
+ while(state.gameMinutes>=1440){
+   state.gameMinutes-=1440;
+   state.day=Number(state.day||1)+1;
+   triggerScheduledEvent(state,state.day);
+   if(state.day%3===0)state.weather=Math.random()<.35?"rainy":"sunny";
+   if(Math.random()<.72)state.poop=Math.min(3,(state.poop||0)+1)
+ }
+
+ const factor=speedFactor(state);
+ const dayFraction=gameMinutesAdded/1440;
+ const spa=currentEvent()&&currentEvent().id==="spa";
+ state.hunger=clamp(state.hunger-58*dayFraction*factor);
+ state.thirst=clamp(safeNumber(state.thirst,85)-72*dayFraction*factor);
+ state.love=clamp(state.love-24*dayFraction*factor);
+ state.fun=clamp(state.fun-38*dayFraction*factor);
+ state.energy=clamp(state.energy-(spa?22:44)*dayFraction*factor);
+ state.clean=clamp(state.clean-(spa?18:40)*dayFraction*factor);
+ state.exercise=clamp(state.exercise-30*dayFraction*factor);
+
+ const low=[state.hunger,state.thirst,state.love,state.fun,state.energy,state.clean,state.exercise].filter(v=>v<20).length;
+ if(state.poop>0){
+   state.clean=clamp(state.clean-12*dayFraction*state.poop);
+   if(state.poop>=2)state.health=clamp(state.health-7*dayFraction*state.poop)
+ }
+ if(state.hunger<=0)state.health=clamp(state.health-22*dayFraction);
+ if(state.thirst<=0)state.health=clamp(state.health-34*dayFraction);
+ if(state.clean<=0)state.health=clamp(state.health-14*dayFraction);
+ if(low)state.health=clamp(state.health-12*dayFraction*low*factor);
+ else state.health=clamp(state.health+2*dayFraction);
+
+ reanchorTime(state,Date.now());
+ renderAll();
+ const active=document.querySelector(".tab.active");
+ showTab(active?active.dataset.tab:"care");
+ saveSlot();
+
+ if(state.day>beforeDay&&state.events&&state.events.active)showActiveEvent()
+}
+function scheduleLiveLoop(token){
+ tickTimer=setTimeout(()=>{
+   if(token!==liveLoopToken)return;
+   if(state)advanceFiveSecondStep();
+   scheduleLiveLoop(token)
+ },5000)
+}
+function startLoop(){
+ stopLoop();
+ liveLoopToken++;
+ scheduleLiveLoop(liveLoopToken)
+}
+function stopLoop(){
+ liveLoopToken++;
+ if(tickTimer!==null){
+   clearTimeout(tickTimer);
+   tickTimer=null
+ }
+}
+document.querySelectorAll(".roombtn").forEach(b=>b.onclick=()=>{state.room=b.dataset.room;saveSlot();renderAll();say(state.name+" ist jetzt im "+({"living":"Wohnzimmer","garden":"Garten","bedroom":"Schlafzimmer","bathroom":"Badezimmer"}[state.room])+".")});
+function showTab(tabName){
+ document.querySelectorAll(".tab").forEach(btn=>{
+   btn.classList.toggle("active",btn.dataset.tab===tabName)
+ });
+ document.querySelectorAll(".action-pane").forEach(pane=>{
+   const selected=pane.id==="pane-"+tabName;
+   pane.hidden=false;
+   pane.classList.remove("hidden","active-pane");
+   if(selected)pane.classList.add("active-pane")
+ });
+}
+showTab("care");
+$("tabsNav").addEventListener("click",event=>{
+ const button=event.target.closest(".tab");
+ if(!button||!$("tabsNav").contains(button))return;
+ if(actionsLocked()){event.preventDefault();return}
+ event.preventDefault();
+ showTab(button.dataset.tab);
+ if(window.matchMedia("(max-width:700px)").matches){
+   const pane=$("pane-"+button.dataset.tab);
+   if(pane)setTimeout(()=>pane.scrollIntoView({behavior:"smooth",block:"nearest"}),30)
+ }
+});
+document.querySelectorAll("[data-act]").forEach(b=>{
+ b.addEventListener("click",event=>{
+   if(actionsLocked()){event.preventDefault();return}
+   act(b.dataset.act)
+ })
+});
+document.querySelectorAll("[data-game]").forEach(b=>b.onclick=()=>startMini(b.dataset.game));
+$("pug").onclick=()=>act("pet");
+$("manualSave").onclick=()=>{const ok=saveSlot();toast(ok?"Spielstand gespeichert":"Speichern nicht möglich")};
+$("switchBtn").onclick=()=>{if(!actionsLocked())showSaveScreen()};
+$("settingsBtn").onclick=()=>{if(actionsLocked())return;$("settingsCycle").value=state.cycle;$("difficulty").value=state.difficulty;document.body.classList.add("settings-open");$("settingsModal").classList.remove("hidden")};
+$("closeSettings").onclick=()=>{$("settingsModal").classList.add("hidden");document.body.classList.remove("settings-open")};
+$("saveSettings").onclick=()=>{
+ syncFromClock(state,Date.now(),false);
+ reanchorTime(state);
+ state.cycle=+$("settingsCycle").value;
+ state.difficulty=$("difficulty").value;
+ reanchorTime(state);
+ saveSlot();
+ $("settingsModal").classList.add("hidden");
+ document.body.classList.remove("settings-open");
+ toast("Einstellungen gespeichert");
+ renderAll()
+};
+$("resetGame").onclick=()=>{
+ if(!confirm("Möchtest du den gesamten Spielstand wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."))return;
+ stopLoop();
+ try{
+   localStorage.removeItem(SINGLE_SAVE_KEY);
+ }catch(e){
+   console.error(e);
+   toast("Spielstand konnte nicht gelöscht werden");
+   return
+ }
+ state=null;
+ currentSlot=null;
+ $("settingsModal").classList.add("hidden");
+ document.body.classList.remove("settings-open");
+ $("gameScreen").classList.add("hidden");
+ $("saveScreen").classList.remove("hidden");
+ renderSaves();
+ toast(readJson(SINGLE_SAVE_KEY)?"Löschen fehlgeschlagen":"Spielstand gelöscht")
+};
+$("cancelCreate").onclick=()=>{$("createModal").classList.add("hidden");document.body.classList.remove("create-open");currentSlot=null};
+$("confirmCreate").onclick=()=>{
+ try{
+   const name=$("newName").value.trim().slice(0,16);
+   if(!name){toast("Bitte einen Namen eingeben");return}
+   const created=migrate(defaultState(name,$("cycleSelect").value));
+   if(!writeJson(slotKey(),created)){toast("Speichern wurde vom Browser blockiert");return}
+   $("createModal").classList.add("hidden");
+   document.body.classList.remove("create-open");
+   openGame(0)
+ }catch(e){
+   console.error("Fehler beim Erstellen des Spielstands:",e);
+   toast("Das neue Spiel konnte nicht erstellt werden")
+ }
+};
+window.addEventListener("beforeunload",()=>saveSlot());
+window.addEventListener("pagehide",()=>saveSlot());
+document.addEventListener("visibilitychange",()=>{
+ if(document.hidden){
+   saveSlot()
+ }else if(state){
+   syncFromClock(state,Date.now(),false);
+   reanchorTime(state,Date.now());
+   renderAll();
+   saveSlot();
+   startLoop()
+ }
+});
+window.addEventListener("focus",()=>{
+ if(state){
+   syncFromClock(state,Date.now(),false);
+   renderAll();
+   startLoop()
+ }
+});
+window.addEventListener("pageshow",()=>{
+ if(state){
+   syncFromClock(state,Date.now(),false);
+   renderAll();
+   startLoop()
+ }
+});
+initSaveCache();renderSaves();
+
+function updateCompactViewport(){
+ const compact=window.innerHeight<=760||window.innerWidth<=700;
+ document.body.classList.toggle("compact-stage",compact)
+}
+window.addEventListener("resize",updateCompactViewport,{passive:true});
+window.addEventListener("orientationchange",()=>setTimeout(updateCompactViewport,120),{passive:true});
+updateCompactViewport();
+
+})();
+</script>
+</body>
+</html>
